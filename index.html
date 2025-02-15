@@ -217,7 +217,27 @@
                         `;
                     }
 
-                    if (postType === 'text') {
+                    // Display images for text posts as well
+                    if (postType === 'text' && post.body) {
+                        // Check if there are any images within the text post
+                        const imageRegex = /<img[^>]+src="([^">]+)"/g;
+                        let match;
+                        let images = [];
+                        while ((match = imageRegex.exec(post.body)) !== null) {
+                            images.push(match[1]);
+                        }
+
+                        if (images.length > 0) {
+                            images.forEach(imageUrl => {
+                                postContent = `
+                                    <a href="${postLink}" target="_blank">
+                                        <img src="${imageUrl}" alt="Post image" />
+                                    </a>
+                                    ${postContent}
+                                `;
+                            });
+                        }
+
                         postContent += `<div class="card-body">${post.body}</div>`;
                     }
 
