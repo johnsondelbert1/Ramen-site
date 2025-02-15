@@ -112,14 +112,21 @@
     </nav>
 
     <script>
+        // Function to switch between tabs
         function switchTab(tab) {
-            document.querySelectorAll('.posts-container').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(link => link.classList.remove('active'));
+            const tabs = document.querySelectorAll('.posts-container');
+            const navItems = document.querySelectorAll('.nav-item');
 
+            // Remove active class from all tabs and nav items
+            tabs.forEach(t => t.classList.remove('active'));
+            navItems.forEach(link => link.classList.remove('active'));
+
+            // Add active class to the clicked tab and corresponding nav item
             document.getElementById(`${tab}-posts`).classList.add('active');
             document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
         }
 
+        // Set the default tab as active
         document.getElementById('reddit-posts').classList.add('active');
 
         // Fetch Reddit posts
@@ -130,38 +137,43 @@
                 const data = await response.json();
                 const posts = data.data.children;
 
-                redditPosts.innerHTML = '';
+                redditPosts.innerHTML = '';  // Clear the posts container
                 posts.forEach(post => {
-                    const card = document.createElement('div');
-                    card.className = 'card';
-
-                    const postTitle = post.data.title;
-                    const postUrl = post.data.url;
-                    const postSubreddit = post.data.subreddit;
-                    const postBody = post.data.selftext;
                     const postImage = post.data.preview ? post.data.preview.images[0].source.url : null;
 
-                    let postContent = `
-                        <div class="card-header">${postTitle}</div>
-                        <div class="card-body">
-                            <p>Subreddit: ${postSubreddit}</p>
-                            <p>${postBody}</p>
-                            <a href="${postUrl}" target="_blank">Read more</a>
-                        </div>
-                    `;
-
+                    // Only add posts with images
                     if (postImage) {
-                        postContent = `
-                            <img src="${postImage}" alt="Post image" />
-                            ${postContent}
-                        `;
-                    }
+                        const card = document.createElement('div');
+                        card.className = 'card';
 
-                    card.innerHTML = postContent;
-                    redditPosts.appendChild(card);
+                        const postTitle = post.data.title;
+                        const postUrl = post.data.url;
+                        const postSubreddit = post.data.subreddit;
+                        const postBody = post.data.selftext;
+
+                        let postContent = `
+                            <div class="card-header">${postTitle}</div>
+                            <div class="card-body">
+                                <p>Subreddit: ${postSubreddit}</p>
+                                <p>${postBody}</p>
+                                <a href="${postUrl}" target="_blank">Read more</a>
+                            </div>
+                        `;
+
+                        if (postImage) {
+                            postContent = `
+                                <img src="${postImage}" alt="Post image" />
+                                ${postContent}
+                            `;
+                        }
+
+                        card.innerHTML = postContent;
+                        redditPosts.appendChild(card);
+                    }
                 });
-            } catch {
-                redditPosts.innerHTML = `<p style="color: red;">Failed to load Reddit posts.</p>`;
+            } catch (error) {
+                console.error('Error fetching Reddit posts:', error);
+                document.getElementById('reddit-error').textContent = 'Failed to load Reddit posts.';
             }
         }
 
@@ -177,7 +189,7 @@
                 const data = await response.json();
                 const posts = data.response.posts;
 
-                tumblrPosts.innerHTML = '';
+                tumblrPosts.innerHTML = '';  // Clear the posts container
                 posts.forEach(post => {
                     const card = document.createElement('div');
                     card.className = 'card';
@@ -187,7 +199,6 @@
                     const postLink = post.post_url;
                     const postImage = post.photos ? post.photos[0].alt_sizes[0].url : null;
 
-                    // Handling different types of posts in the Neue Post Format
                     let postContent = `
                         <div class="card-header">${postTitle}</div>
                         <div class="card-body">${postBody}</div>
@@ -204,11 +215,13 @@
                     card.innerHTML = postContent;
                     tumblrPosts.appendChild(card);
                 });
-            } catch {
-                tumblrPosts.innerHTML = `<p style="color: red;">Failed to load Tumblr posts.</p>`;
+            } catch (error) {
+                console.error('Error fetching Tumblr posts:', error);
+                document.getElementById('tumblr-error').textContent = 'Failed to load Tumblr posts.';
             }
         }
 
+        // Load the posts on page load
         fetchRedditData();
         fetchTumblrData();
     </script>
