@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shelbee's Hub</title>
-    <link href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css">
     <style>
         :root {
             --primary-color: #6a4c8c;
@@ -67,6 +67,11 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
         }
 
         .card-header {
@@ -75,6 +80,7 @@
             padding: 16px;
             background-color: var(--primary-color);
             color: var(--text-color);
+            cursor: pointer;
         }
 
         .card-body {
@@ -82,60 +88,41 @@
             font-size: 1rem;
             color: var(--text-color);
             word-wrap: break-word;
+            display: none;
+        }
+
+        .card-body.expanded {
+            display: block;
         }
 
         .card img {
             width: 100%;
-            object-fit: cover;
+            height: auto;
+            border-radius: 8px;
             display: block;
         }
 
-        /* Grid Layout */
-        .posts-container {
+        .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            transition: all 0.3s ease;
-        }
-
-        /* Media Queries for responsive design */
-        @media (min-width: 600px) {
-            .posts-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (min-width: 900px) {
-            .posts-container {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        @media (min-width: 1200px) {
-            .posts-container {
-                grid-template-columns: repeat(4, 1fr);
-            }
+            gap: 16px;
         }
     </style>
 </head>
 
 <body>
+
     <div class="container">
-        <!-- Reddit Posts -->
         <div id="reddit-posts" class="posts-container active"></div>
-        <!-- Tumblr Posts -->
         <div id="tumblr-posts" class="posts-container"></div>
-        <div class="error" id="reddit-error"></div>
-        <div class="error" id="tumblr-error"></div>
     </div>
 
-    <!-- Navigation Bar -->
     <nav class="bottom-nav">
         <a class="nav-item active" data-tab="reddit" onclick="switchTab('reddit')">
-            <i class="mdi mdi-reddit"></i>
+            <i class="mdi mdi-reddit"></i> Reddit
         </a>
         <a class="nav-item" data-tab="tumblr" onclick="switchTab('tumblr')">
-            <i class="mdi mdi-noodles"></i>
+            <i class="mdi mdi-noodles"></i> Tumblr
         </a>
     </nav>
 
@@ -148,27 +135,26 @@
             document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
         }
 
-        // Fetch Reddit posts (only with images)
+        // Fetch Reddit posts and display only those with images
         async function fetchRedditData() {
             const redditPosts = document.getElementById('reddit-posts');
             try {
-                const response = await fetch('https://www.reddit.com/r/ramen/.json');
+                const response = await fetch(`https://www.reddit.com/r/ramen.json`);
                 const data = await response.json();
                 const posts = data.data.children;
 
-                redditPosts.innerHTML = ''; // Clear previous posts to avoid duplicates
-
-                // Loop through Reddit posts and filter out those without images
+                redditPosts.innerHTML = '';
                 posts.forEach(post => {
-                    const postImage = post.data.preview ? post.data.preview.images[0].source.url : null;
-                    if (postImage) {
+                    const postData = post.data;
+                    if (postData.preview) {
                         const card = document.createElement('div');
                         card.className = 'card';
 
-                        const postTitle = post.data.title;
-                        const postUrl = post.data.url;
-                        const postSubreddit = post.data.subreddit;
-                        const postBody = post.data.selftext;
+                        const postTitle = postData.title;
+                        const postUrl = postData.url;
+                        const postSubreddit = postData.subreddit;
+                        const postBody = postData.selftext;
+                        const postImage = postData.preview.images[0].source.url;
 
                         let postContent = `
                             <div class="card-header">${postTitle}</div>
@@ -195,31 +181,34 @@
             }
         }
 
-        // Fetch Tumblr posts
+        // Fetch Tumblr posts and display according to post type
         async function fetchTumblrData() {
             const tumblrPosts = document.getElementById('tumblr-posts');
             try {
-                const response = await fetch('https://api.tumblr.com/v2/blog/ramen-tokyo.tumblr.com/posts?api_key=ZGuu8GZuo6jmos0wHBgUG4zpfdzehIBSZvXECK3wU788LrjCcN');
+                const response = await fetch('https://api.tumblr.com/v2/blog/ramen-tokyo.tumblr.com/posts?api_key=ZGuu8GZuo6jmos0wHBgUG4zpfdzehIBSZvXECK3wU788LrjCcN', {
+                    method: 'GET',
+                    headers: {
+                        'User-Agent': 'shelbeebot; johnsondelbert1@gmail.com'
+                    }
+                });
                 const data = await response.json();
                 const posts = data.response.posts;
 
-                tumblrPosts.innerHTML = ''; // Clear previous posts
-
+                tumblrPosts.innerHTML = '';
                 posts.forEach(post => {
                     const card = document.createElement('div');
-                    card.className = 'card';
+                    card.className = `card ${post.type}`;
 
                     const postTitle = post.summary || 'Untitled';
                     const postLink = post.post_url;
-                    const postImage = post.photos ? post.photos[0].original_size.url : null;
                     const postType = post.type || 'Unknown Type';
-
                     let postContent = `
                         <div class="card-header">${postTitle}</div>
                         <p><strong>Type:</strong> ${postType}</p>
                     `;
 
-                    if (postImage) {
+                    if (postType === 'photo' && post.photos) {
+                        const postImage = post.photos[0].original_size.url;
                         postContent = `
                             <a href="${postLink}" target="_blank">
                                 <img src="${postImage}" alt="Post image" />
@@ -228,18 +217,47 @@
                         `;
                     }
 
+                    if (postType === 'text') {
+                        postContent += `<div class="card-body">${post.body}</div>`;
+                    }
+
+                    if (postType === 'quote') {
+                        postContent += `
+                            <div class="card-body">
+                                <blockquote>${post.text}</blockquote>
+                                <footer>- ${post.source}</footer>
+                            </div>
+                        `;
+                    }
+
+                    if (postType === 'link') {
+                        postContent += `
+                            <div class="card-body">
+                                <a href="${post.link}" target="_blank">${post.link}</a>
+                            </div>
+                        `;
+                    }
+
                     card.innerHTML = postContent;
                     tumblrPosts.appendChild(card);
+
+                    // Add collapsible functionality for text posts
+                    if (postType === 'text') {
+                        card.querySelector('.card-header').addEventListener('click', () => {
+                            const body = card.querySelector('.card-body');
+                            body.classList.toggle('expanded');
+                        });
+                    }
                 });
             } catch (error) {
                 tumblrPosts.innerHTML = `<p style="color: red;">Failed to load Tumblr posts: ${error}</p>`;
             }
         }
 
-        // Initialize page by loading posts
         fetchRedditData();
         fetchTumblrData();
     </script>
+
 </body>
 
 </html>
