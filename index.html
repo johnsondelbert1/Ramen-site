@@ -101,7 +101,9 @@
 
 <body>
     <div class="container">
+        <!-- Reddit Posts -->
         <div id="reddit-posts" class="posts-container active"></div>
+        <!-- Tumblr Posts -->
         <div id="tumblr-posts" class="posts-container"></div>
         <div class="error" id="reddit-error"></div>
         <div class="error" id="tumblr-error"></div>
@@ -126,7 +128,7 @@
             document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
         }
 
-        // Reddit Data Fetch
+        // Fetch Reddit posts
         async function fetchRedditData() {
             const redditPosts = document.getElementById('reddit-posts');
             try {
@@ -134,44 +136,46 @@
                 const data = await response.json();
                 const posts = data.data.children;
 
-                redditPosts.innerHTML = '';
+                redditPosts.innerHTML = ''; // Clear previous posts
+
+                // Loop through Reddit posts and filter out those without images
                 posts.forEach(post => {
-                    const card = document.createElement('div');
-                    card.className = 'card';
-
-                    const postTitle = post.data.title;
-                    const postUrl = post.data.url;
-                    const postSubreddit = post.data.subreddit;
-                    const postBody = post.data.selftext;
                     const postImage = post.data.preview ? post.data.preview.images[0].source.url : null;
-
-                    let postContent = `
-                        <div class="card-header">${postTitle}</div>
-                        <div class="card-body">
-                            <p>Subreddit: ${postSubreddit}</p>
-                            <p>${postBody}</p>
-                            <a href="${postUrl}" target="_blank">Read more</a>
-                        </div>
-                    `;
-
                     if (postImage) {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+
+                        const postTitle = post.data.title;
+                        const postUrl = post.data.url;
+                        const postSubreddit = post.data.subreddit;
+                        const postBody = post.data.selftext;
+
+                        let postContent = `
+                            <div class="card-header">${postTitle}</div>
+                            <div class="card-body">
+                                <p>Subreddit: ${postSubreddit}</p>
+                                <p>${postBody}</p>
+                                <a href="${postUrl}" target="_blank">Read more</a>
+                            </div>
+                        `;
+
                         postContent = `
                             <a href="${postUrl}" target="_blank">
                                 <img src="${postImage}" alt="Post image" />
                             </a>
                             ${postContent}
                         `;
-                    }
 
-                    card.innerHTML = postContent;
-                    redditPosts.appendChild(card);
+                        card.innerHTML = postContent;
+                        redditPosts.appendChild(card);
+                    }
                 });
-            } catch {
-                redditPosts.innerHTML = `<p style="color: red;">Failed to load Reddit posts.</p>`;
+            } catch (error) {
+                redditPosts.innerHTML = `<p style="color: red;">Failed to load Reddit posts: ${error}</p>`;
             }
         }
 
-        // Tumblr Data Fetch
+        // Fetch Tumblr posts
         async function fetchTumblrData() {
             const tumblrPosts = document.getElementById('tumblr-posts');
             try {
@@ -179,7 +183,8 @@
                 const data = await response.json();
                 const posts = data.response.posts;
 
-                tumblrPosts.innerHTML = '';
+                tumblrPosts.innerHTML = ''; // Clear previous posts
+
                 posts.forEach(post => {
                     const card = document.createElement('div');
                     card.className = 'card';
@@ -189,7 +194,10 @@
                     const postImage = post.photos ? post.photos[0].original_size.url : null;
                     const postType = post.type || 'Unknown Type';
 
-                    let postContent = `<div class="card-header">${postTitle}</div><p><strong>Type:</strong> ${postType}</p>`;
+                    let postContent = `
+                        <div class="card-header">${postTitle}</div>
+                        <p><strong>Type:</strong> ${postType}</p>
+                    `;
 
                     if (postImage) {
                         postContent = `
@@ -203,12 +211,12 @@
                     card.innerHTML = postContent;
                     tumblrPosts.appendChild(card);
                 });
-            } catch {
-                tumblrPosts.innerHTML = `<p style="color: red;">Failed to load Tumblr posts.</p>`;
+            } catch (error) {
+                tumblrPosts.innerHTML = `<p style="color: red;">Failed to load Tumblr posts: ${error}</p>`;
             }
         }
 
-        // Fetch posts on load
+        // Initialize page by loading posts
         fetchRedditData();
         fetchTumblrData();
     </script>
