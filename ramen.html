@@ -4,73 +4,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ramen Noodle Blog</title>
+    <title>Ramen Hub 🍜</title>
     <style>
+        /* Background: Yellow Waves Like Ramen */
         body {
-            margin: 0;
-            height: 100vh;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200"><defs><linearGradient id="noodleColor" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#f8e71c;stop-opacity:1" /><stop offset="100%" style="stop-color:#f0c71f;stop-opacity:1" /></linearGradient></defs><g fill="url(#noodleColor)"><path d="M0,60 C20,40 60,80 80,60 C100,40 140,80 160,60 C180,40 220,80 240,60" stroke="none" stroke-width="2" fill="none" /> <path d="M0,100 C20,80 60,120 80,100 C100,80 140,120 160,100 C180,80 220,120 240,100" stroke="none" stroke-width="2" fill="none" /> <path d="M0,140 C20,120 60,160 80,140 C100,120 140,160 160,140 C180,120 220,160 240,140" stroke="none" stroke-width="2" fill="none" /> <path d="M0,180 C20,160 60,200 80,180 C100,160 140,200 160,180 C180,160 220,200 240,180" stroke="none" stroke-width="2" fill="none" /></g></svg>') no-repeat center center;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 1440 320"><path fill="%23FFD700" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,165.3C384,171,480,149,576,122.7C672,96,768,64,864,74.7C960,85,1056,139,1152,176C1248,213,1344,235,1392,245.3L1440,256V0H1392C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0H0Z"></path></svg>');
+            background-repeat: no-repeat;
             background-size: cover;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        /* Ramen Logo */
+        .logo {
             text-align: center;
-            flex-direction: column;
-            overflow: hidden;
+            margin-top: 20px;
         }
 
-        .content {
-            background-color: rgba(0, 0, 0, 0.5);
+        .logo svg {
+            width: 80px;
+            height: 80px;
+        }
+
+        /* Content Area */
+        .container {
+            max-width: 800px;
+            margin: auto;
             padding: 20px;
-            border-radius: 10px;
-            width: 100%;
-            max-width: 1000px;
-            box-sizing: border-box;
-            margin: 10px;
-            height: 90vh;
             overflow-y: auto;
-            padding-bottom: 40px; /* Add spacing at the bottom */
         }
 
-        h1 {
-            font-size: 2.5em;
+        /* Post Styles */
+        .post {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px;
             margin-bottom: 20px;
-            line-height: 1.2;
         }
 
-        /* Tabs */
-        .tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            font-size: 1.25em;
-        }
-
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            background-color: #f1c27d;
-            border: none;
+        .post img {
+            width: 100%;
+            height: auto;
             border-radius: 5px;
-            margin: 0 10px;
-            font-size: 1.25em;
-            transition: background-color 0.3s;
-        }
-
-        .tab:hover {
-            background-color: #d4af7f;
-        }
-
-        .active-tab {
-            background-color: #d4af7f;
-            color: white;
-        }
-
-        /* Hide content by default */
-        .posts-container {
-            display: none;
+            object-fit: cover;
         }
 
         /* Taskbar */
@@ -79,224 +58,106 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            background-color: #f1c27d;
-            color: black;
-            padding: 10px;
+            background: #ffcc00;
+            padding: 8px 0;
             text-align: center;
-            font-size: 1.25em;
+        }
+
+        .taskbar button {
+            background: none;
+            border: none;
+            font-size: 14px;
             font-weight: bold;
-            box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Ensure images within Tumblr and Reddit posts fit within the parent container */
-        .text-post img,
-        .reddit-post img {
-            width: 100%;
-            height: auto;
-            max-width: 100%;
-            object-fit: contain;
-        }
-
-        /* Styling for Tumblr and Reddit text posts */
-        .window {
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 10px;
+            cursor: pointer;
             padding: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
         }
 
-        .window-header {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-            line-height: 1.3;
-        }
-
-        .window-body {
-            font-size: 1.1em;
-            margin-bottom: 15px;
-            line-height: 1.6;
-        }
-
-        /* Additional spacing for readability */
-        .window-body, .window-header {
-            padding-left: 10px;
-            padding-right: 10px;
-        }
-
-        .tab {
-            padding: 12px 24px;
+        .taskbar button.active {
+            text-decoration: underline;
         }
     </style>
 </head>
 
 <body>
-    <div class="content">
-        <h1>Welcome to Ramen Blog</h1>
 
-        <!-- Tabs to switch between Tumblr and Reddit -->
-        <div class="tabs">
-            <button class="tab active-tab" id="tumblr-tab">Tumblr</button>
-            <button class="tab" id="reddit-tab">Reddit</button>
-        </div>
+    <!-- Ramen SVG Logo -->
+    <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 16h16l-1 3H5l-1-3z" fill="#FFD700"/>
+            <path d="M5 10c0 2.5 1.5 4.5 3.5 5.5h7c2-1 3.5-3 3.5-5.5V9h-14v1z" fill="#D2691E"/>
+            <path d="M7 5h2v3H7V5zm4 0h2v3h-2V5zm4 0h2v3h-2V5z" fill="#D2691E"/>
+        </svg>
+    </div>
 
-        <div id="tumblr-posts" class="posts-container"></div>
-        <div id="reddit-posts" class="posts-container"></div>
+    <!-- Content Container -->
+    <div class="container">
+        <div id="tumblr-posts"></div>
+        <div id="reddit-posts" style="display: none;"></div>
     </div>
 
     <!-- Taskbar -->
     <div class="taskbar">
-        Ramen Blog 🥢
+        <button class="tab-button active" onclick="switchTab('tumblr')">Tumblr</button>
+        <button class="tab-button" onclick="switchTab('reddit')">Reddit</button>
     </div>
 
     <script>
-        // Function to fetch and display Tumblr posts
-        async function fetchTumblrData() {
-            const tumblrPosts = document.getElementById('tumblr-posts');
-            const blogs = ['ramen-tokyo', 'worldudon', 'udonangya']; // List of blogs to fetch from
+        function switchTab(tab) {
+            document.getElementById("tumblr-posts").style.display = tab === "tumblr" ? "block" : "none";
+            document.getElementById("reddit-posts").style.display = tab === "reddit" ? "block" : "none";
+
+            document.querySelectorAll(".tab-button").forEach(btn => btn.classList.remove("active"));
+            document.querySelector(`button[onclick="switchTab('${tab}')"]`).classList.add("active");
+        }
+
+        async function fetchTumblrPosts() {
+            const blogs = ['ramen-tokyo', 'worldudon', 'udonangya'];
             const apiKey = 'ZGuu8GZuo6jmos0wHBgUG4zpfdzehIBSZvXECK3wU788LrjCcN';
+            const container = document.getElementById("tumblr-posts");
+            container.innerHTML = "";
 
             try {
-                let allPosts = [];
-
-                // Fetch posts from each blog
                 for (const blog of blogs) {
                     const response = await fetch(`https://api.tumblr.com/v2/blog/${blog}.tumblr.com/posts?api_key=${apiKey}`);
                     const data = await response.json();
-                    const posts = data.response.posts;
-                    allPosts = allPosts.concat(posts); // Combine posts from all blogs
-                }
-
-                tumblrPosts.innerHTML = '';
-
-                // Display each post as a window with the appropriate class
-                allPosts.forEach(post => {
-                    const card = document.createElement('div');
-                    const postType = post.type; // Get the post type
-                    card.className = `window ${postType}-post`;
-
-                    // Ensure post title is used, if missing use 'Untitled'
-                    const postTitle = post.title || 'Untitled';
-                    const postBody = post.body || '';
-                    const postLink = post.post_url;
-                    const postImage = post.photos && post.photos.length > 0 ? post.photos[0].alt_sizes[0].url : null;
-
-                    // Construct the post content based on the post type
-                    let postContent = `
-                        <div class="window-header">${postTitle}</div>
-                        <div class="window-body">${postBody}</div>
-                        <a href="${postLink}" target="_blank">Read more</a>
-                    `;
-
-                    // Handle different post types
-                    if (postType === 'text') {
-                        card.classList.add('text-post');
-                        if (postImage) {
-                            postContent = `
-                                <img src="${postImage}" alt="Post image" />
-                                ${postContent}
-                            `;
+                    data.response.posts.forEach(post => {
+                        if (post.type === "photo" && post.photos.length > 0) {
+                            const imgSrc = post.photos[0].original_size.url;
+                            container.innerHTML += `<div class="post"><img src="${imgSrc}" alt="Tumblr Post"></div>`;
+                        } else if (post.type === "text") {
+                            container.innerHTML += `<div class="post"><p>${post.summary}</p></div>`;
                         }
-                    } else if (postType === 'photo') {
-                        card.classList.add('photo-post');
-                        postContent = `<img src="${postImage}" alt="Post image" />${postContent}`;
-                    } else if (postType === 'quote') {
-                        card.classList.add('quote-post');
-                        postContent = `<blockquote>${postBody}</blockquote>${postContent}`;
-                    } else if (postType === 'link') {
-                        card.classList.add('link-post');
-                        postContent = `<div class="window-body"><a href="${postLink}" target="_blank">${postTitle}</a></div>${postContent}`;
-                    }
-
-                    card.innerHTML = postContent;
-                    tumblrPosts.appendChild(card);
-                });
+                    });
+                }
             } catch (error) {
-                tumblrPosts.innerHTML = `<p style="color: red;">Failed to load Tumblr posts.</p>`;
+                container.innerHTML = `<p style="color: red;">Failed to load Tumblr posts.</p>`;
             }
         }
 
-        // Function to fetch Reddit posts from the ramen subreddit (only image posts)
-        async function fetchRedditData() {
-            const redditPosts = document.getElementById('reddit-posts');
-            const subreddit = 'ramen'; // Subreddit to fetch from
-            const url = `https://www.reddit.com/r/${subreddit}/top.json?limit=10`;
+        async function fetchRedditPosts() {
+            const subreddit = "ramen";
+            const container = document.getElementById("reddit-posts");
+            container.innerHTML = "";
 
             try {
-                const response = await fetch(url);
+                const response = await fetch(`https://www.reddit.com/r/${subreddit}/top.json?limit=10`);
                 const data = await response.json();
-                const posts = data.data.children;
-
-                redditPosts.innerHTML = '';
-
-                posts.forEach(post => {
-                    const postData = post.data;
-
-                    // Only show posts with images
-                    if (postData.preview && postData.preview.images.length > 0) {
-                        const card = document.createElement('div');
-                        card.className = 'window reddit-post';
-
-                        const postTitle = postData.title || 'Untitled';
-                        const postLink = `https://www.reddit.com${postData.permalink}`;
-                        const postImage = postData.preview.images[0].source.url;
-
-                        let postContent = `
-                            <div class="window-header">${postTitle}</div>
-                            <div class="window-body">
-                                <a href="${postLink}" target="_blank">Read more</a>
-                            </div>
-                        `;
-
-                        postContent = `
-                            <img src="${postImage}" alt="Post image" />
-                            ${postContent}
-                        `;
-
-                        card.innerHTML = postContent;
-                        redditPosts.appendChild(card);
+                data.data.children.forEach(post => {
+                    if (post.data.post_hint === "image") {
+                        const imgSrc = post.data.url;
+                        container.innerHTML += `<div class="post"><img src="${imgSrc}" alt="Reddit Post"></div>`;
                     }
                 });
             } catch (error) {
-                redditPosts.innerHTML = `<p style="color: red;">Failed to load Reddit posts.</p>`;
+                container.innerHTML = `<p style="color: red;">Failed to load Reddit posts.</p>`;
             }
         }
 
-        // Function to handle tab switching
-        function switchTab(tabName) {
-            const tumblrTab = document.getElementById('tumblr-tab');
-            const redditTab = document.getElementById('reddit-tab');
-            const tumblrPosts = document.getElementById('tumblr-posts');
-            const redditPosts = document.getElementById('reddit-posts');
-
-            if (tabName === 'tumblr') {
-                tumblrTab.classList.add('active-tab');
-                redditTab.classList.remove('active-tab');
-                tumblrPosts.style.display = 'block';
-                redditPosts.style.display = 'none';
-            } else {
-                redditTab.classList.add('active-tab');
-                tumblrTab.classList.remove('active-tab');
-                redditPosts.style.display = 'block';
-                tumblrPosts.style.display = 'none';
-            }
-        }
-
-        // Set Tumblr as the default active tab and fetch posts
-        document.getElementById('tumblr-tab').addEventListener('click', () => {
-            switchTab('tumblr');
-            fetchTumblrData();
-        });
-
-        document.getElementById('reddit-tab').addEventListener('click', () => {
-            switchTab('reddit');
-            fetchRedditData();
-        });
-
-        // Initialize the page with Tumblr content
-        switchTab('tumblr');
-        fetchTumblrData();
+        // Load Tumblr first
+        fetchTumblrPosts();
+        fetchRedditPosts();
     </script>
+
 </body>
 
 </html>
