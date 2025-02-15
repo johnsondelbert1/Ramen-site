@@ -55,6 +55,12 @@
             padding: 16px;
             background-color: var(--primary-color);
             color: var(--text-color);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .card-header:hover {
+            background-color: var(--accent-color);
         }
 
         .card-body {
@@ -62,6 +68,13 @@
             font-size: 1rem;
             color: var(--text-color);
             word-wrap: break-word;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .card-body.open {
+            max-height: 500px; /* You can adjust this value based on your content size */
         }
 
         .card img {
@@ -134,6 +147,14 @@
         // Set the default tab as active (Reddit)
         document.getElementById('reddit-posts').classList.add('active');
 
+        // Function to toggle the collapsible content
+        function toggleContent(event) {
+            const content = event.target.nextElementSibling;
+            if (content) {
+                content.classList.toggle('open');
+            }
+        }
+
         // Fetch Reddit posts
         async function fetchRedditData() {
             const redditPosts = document.getElementById('reddit-posts');
@@ -157,7 +178,7 @@
                         const postBody = post.data.selftext;
 
                         let postContent = `
-                            <div class="card-header">${postTitle}</div>
+                            <div class="card-header" onclick="toggleContent(event)">${postTitle}</div>
                             <div class="card-body">
                                 <p>Subreddit: ${postSubreddit}</p>
                                 <p>${postBody}</p>
@@ -205,7 +226,7 @@
                     const postImage = post.photos ? post.photos[0].alt_sizes[0].url : null;
 
                     let postContent = `
-                        <div class="card-header">${postTitle}</div>
+                        <div class="card-header" onclick="toggleContent(event)">${postTitle}</div>
                         <div class="card-body">${postBody}</div>
                         <a href="${postLink}" target="_blank">Read more</a>
                     `;
