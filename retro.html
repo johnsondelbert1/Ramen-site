@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Old Windows XP Theme</title>
+    <title>Windows XP Style</title>
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet">
     <style>
-        /* Basic styling for the old Windows XP theme */
+        /* General page styling to resemble Windows XP */
         body {
-            background-color: #c0c0c0;
-            font-family: "Arial", sans-serif;
-            color: #000;
+            background-color: #8c8c8c; /* Default background color */
+            font-family: "Tahoma", "Verdana", sans-serif;
+            color: black;
             margin: 0;
             padding: 0;
         }
@@ -24,34 +24,37 @@
             margin-top: 20px;
         }
 
-        /* Window-like design */
+        /* Window design */
         .window {
             background-color: #ffffff;
-            border: 2px solid #000;
+            border: 2px solid #000080; /* Blue border for Windows XP-like windows */
             margin-bottom: 10px;
-            border-radius: 5px;
+            border-radius: 3px;
             padding: 10px;
+            overflow: hidden;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Soft shadow */
         }
 
         .window-header {
-            background-color: #dcdcdc;
+            background-color: #5a5a5a; /* Title bar color */
             padding: 5px;
             font-weight: bold;
             font-size: 14px;
+            color: white;
+            border-radius: 3px 3px 0 0;
+            cursor: pointer;
         }
 
         .window-body {
             padding: 10px;
         }
 
-        /* Specific styles for each post type */
-        .text-post .window-body {
-            font-style: italic;
-        }
-
+        /* Image styling */
         .photo-post img {
-            max-width: 100%;
+            width: 100%;
             height: auto;
+            max-width: 100%;
+            object-fit: contain;
             margin-bottom: 10px;
         }
 
@@ -68,17 +71,19 @@
             text-decoration: none;
         }
 
-        /* Navigation Bar styled like Windows XP menu */
+        /* Taskbar and Start Menu */
         .start-menu {
-            position: absolute;
+            position: fixed;
             bottom: 20px;
             left: 20px;
             background-color: #0078d4;
             color: white;
-            padding: 10px 20px;
+            padding: 8px 15px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 14px;
+            border: 1px solid #0067a3; /* Border around Start button */
         }
 
         .start-menu-items {
@@ -91,7 +96,7 @@
             padding: 10px;
             top: 35px;
             left: 0;
-            width: 200px;
+            width: 150px;
         }
 
         .start-menu-items a {
@@ -108,12 +113,7 @@
             color: white;
         }
 
-        .nav-item {
-            margin-bottom: 5px;
-            cursor: pointer;
-        }
-
-        /* Specific styles for the active tab */
+        /* Active tab style */
         .nav-item.active {
             font-weight: bold;
             color: #f1f1f1;
