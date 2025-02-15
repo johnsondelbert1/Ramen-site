@@ -7,7 +7,85 @@
     <title>Old Windows XP Theme</title>
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet">
     <style>
-        /* Your existing styles here... */
+        /* Basic styling for the old Windows XP theme */
+        body {
+            background-color: #c0c0c0;
+            font-family: "Arial", sans-serif;
+            color: #000;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .posts-container {
+            margin-top: 20px;
+        }
+
+        /* Window-like design */
+        .window {
+            background-color: #ffffff;
+            border: 2px solid #000;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .window-header {
+            background-color: #dcdcdc;
+            padding: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .window-body {
+            padding: 10px;
+        }
+
+        /* Specific styles for each post type */
+        .text-post .window-body {
+            font-style: italic;
+        }
+
+        .photo-post img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .quote-post blockquote {
+            font-style: italic;
+            color: #0078d4;
+            border-left: 4px solid #0078d4;
+            padding-left: 10px;
+            font-size: 14px;
+        }
+
+        .link-post .window-body a {
+            color: #0078d4;
+            text-decoration: none;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            background-color: #0078d4;
+            color: #ffffff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .nav-item {
+            display: inline-block;
+            margin: 0 20px;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            font-weight: bold;
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -31,47 +109,6 @@
             document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
         }
 
-        // Fetch Reddit posts (only those with images)
-        async function fetchRedditData() {
-            const redditPosts = document.getElementById('reddit-posts');
-            try {
-                const response = await fetch('https://www.reddit.com/r/ramen.json');
-                const data = await response.json();
-                console.log('Reddit Data:', data);  // Log the response for debugging
-                const posts = data.data.children.filter(post => post.data.preview); // Only posts with images
-
-                redditPosts.innerHTML = '';
-                posts.forEach(post => {
-                    const card = document.createElement('div');
-                    card.className = 'window';
-
-                    const postTitle = post.data.title;
-                    const postUrl = post.data.url;
-                    const postImage = post.data.preview ? post.data.preview.images[0].source.url : null;
-
-                    let postContent = `
-                        <div class="window-header">${postTitle}</div>
-                        <div class="window-body">
-                            <a href="${postUrl}" target="_blank">Read more</a>
-                        </div>
-                    `;
-
-                    if (postImage) {
-                        postContent = `
-                            <img src="${postImage}" alt="Post image" style="width: 100%;" />
-                            ${postContent}
-                        `;
-                    }
-
-                    card.innerHTML = postContent;
-                    redditPosts.appendChild(card);
-                });
-            } catch (error) {
-                console.error('Error fetching Reddit posts:', error); // Log the error for debugging
-                redditPosts.innerHTML = `<p style="color: red;">Failed to load Reddit posts.</p>`;
-            }
-        }
-
         // Fetch Tumblr posts from multiple blogs
         async function fetchTumblrData() {
             const tumblrPosts = document.getElementById('tumblr-posts');
@@ -85,18 +122,17 @@
                 for (const blog of blogs) {
                     const response = await fetch(`https://api.tumblr.com/v2/blog/${blog}.tumblr.com/posts?api_key=${apiKey}`);
                     const data = await response.json();
-                    console.log('Tumblr Data:', data);  // Log the response for debugging
                     const posts = data.response.posts;
                     allPosts = allPosts.concat(posts); // Combine posts from all blogs
                 }
 
                 tumblrPosts.innerHTML = '';
 
-                // Display each post as a window
+                // Display each post as a window with the appropriate class
                 allPosts.forEach(post => {
                     const card = document.createElement('div');
                     const postType = post.type; // Get the post type
-                    card.className = 'window';
+                    card.className = `window ${postType}-post`;
 
                     // Ensure post title is used, if missing use 'Untitled'
                     const postTitle = post.title || 'Untitled';
@@ -104,24 +140,37 @@
                     const postLink = post.post_url;
                     const postImage = post.photos && post.photos.length > 0 ? post.photos[0].alt_sizes[0].url : null;
 
+                    // Construct the post content based on the post type
                     let postContent = `
                         <div class="window-header">${postTitle}</div>
                         <div class="window-body">${postBody}</div>
                         <a href="${postLink}" target="_blank">Read more</a>
                     `;
 
-                    if (postImage) {
-                        postContent = `
-                            <img src="${postImage}" alt="Post image" style="width: 100%;" />
-                            ${postContent}
-                        `;
+                    // Handle different post types
+                    if (postType === 'text') {
+                        card.classList.add('text-post');
+                        if (postImage) {
+                            postContent = `
+                                <img src="${postImage}" alt="Post image" />
+                                ${postContent}
+                            `;
+                        }
+                    } else if (postType === 'photo') {
+                        card.classList.add('photo-post');
+                        postContent = `<img src="${postImage}" alt="Post image" />${postContent}`;
+                    } else if (postType === 'quote') {
+                        card.classList.add('quote-post');
+                        postContent = `<blockquote>${postBody}</blockquote>${postContent}`;
+                    } else if (postType === 'link') {
+                        card.classList.add('link-post');
+                        postContent = `<div class="window-body"><a href="${postLink}" target="_blank">${postTitle}</a></div>${postContent}`;
                     }
 
                     card.innerHTML = postContent;
                     tumblrPosts.appendChild(card);
                 });
             } catch (error) {
-                console.error('Error fetching Tumblr posts:', error); // Log the error for debugging
                 tumblrPosts.innerHTML = `<p style="color: red;">Failed to load Tumblr posts.</p>`;
             }
         }
@@ -129,7 +178,6 @@
         // Set Tumblr as the default active tab and fetch posts
         switchTab('tumblr');
         fetchTumblrData(); // Call the function to load the Tumblr posts
-        fetchRedditData(); // Call the function to load the Reddit posts
     </script>
 
 </body>
