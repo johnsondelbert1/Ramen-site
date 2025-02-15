@@ -77,6 +77,7 @@
             padding: 16px;
             background-color: var(--primary-color);
             color: var(--text-color);
+            cursor: pointer;
         }
 
         .card-body {
@@ -84,6 +85,7 @@
             font-size: 1rem;
             color: var(--text-color);
             word-wrap: break-word;
+            display: none;
         }
 
         .card img {
@@ -225,7 +227,7 @@
 
                     // Construct the post content based on the post type
                     let postContent = `
-                        <div class="card-header">${postTitle}</div>
+                        <div class="card-header" onclick="toggleContent(this)">${postTitle}</div>
                         <div class="card-body">${postBody}</div>
                         <a href="${postLink}" target="_blank">Read more</a>
                     `;
@@ -256,6 +258,12 @@
             } catch (error) {
                 tumblrPosts.innerHTML = `<p style="color: red;">Failed to load Tumblr posts.</p>`;
             }
+        }
+
+        // Toggle content visibility on click of post title
+        function toggleContent(header) {
+            const body = header.nextElementSibling;
+            body.style.display = (body.style.display === 'none' || body.style.display === '') ? 'block' : 'none';
         }
 
         // Set Tumblr as the default active tab and fetch posts
