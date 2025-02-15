@@ -217,10 +217,11 @@
                     const postType = post.type; // Get the post type
                     card.className = `card ${postType}-post`;
 
+                    // Ensure post title is used, if missing use 'Untitled'
                     const postTitle = post.title || 'Untitled';
                     const postBody = post.body || '';
                     const postLink = post.post_url;
-                    const postImage = post.photos ? post.photos[0].alt_sizes[0].url : null;
+                    const postImage = post.photos && post.photos.length > 0 ? post.photos[0].alt_sizes[0].url : null;
 
                     // Construct the post content based on the post type
                     let postContent = `
@@ -232,6 +233,12 @@
                     // Handle different post types
                     if (postType === 'text') {
                         card.classList.add('text-post');
+                        if (postImage) {
+                            postContent = `
+                                <img src="${postImage}" alt="Post image" />
+                                ${postContent}
+                            `;
+                        }
                     } else if (postType === 'photo') {
                         card.classList.add('photo-post');
                         postContent = `<img src="${postImage}" alt="Post image" />${postContent}`;
