@@ -94,24 +94,11 @@
             font-size: 1rem;
             color: var(--text-color);
             word-wrap: break-word;
-            display: none; /* Hide text by default */
         }
 
         .card img {
             width: 100%;
             border-radius: 8px;
-            display: block;
-        }
-
-        .read-more {
-            color: var(--accent-color);
-            text-decoration: none;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        /* Show the text when expanded */
-        .expanded .card-body {
             display: block;
         }
 
@@ -186,8 +173,7 @@
                         `;
                     }
 
-                    const readMoreButton = postBody ? `<a href="#" class="read-more" onclick="toggleText(this)">Read More</a>` : '';
-                    card.innerHTML = postContent + readMoreButton;
+                    card.innerHTML = postContent;
                     redditPosts.appendChild(card);
                 });
             } catch {
@@ -230,20 +216,12 @@
                         `;
                     }
 
-                    const readMoreButton = postBody ? `<a href="#" class="read-more" onclick="toggleText(this)">Read More</a>` : '';
-                    card.innerHTML = postContent + readMoreButton;
+                    card.innerHTML = postContent;
                     tumblrPosts.appendChild(card);
                 });
             } catch {
                 tumblrPosts.innerHTML = `<p style="color: red;">Failed to load Tumblr posts.</p>`;
             }
-        }
-
-        // Toggle function to show/hide the post text
-        function toggleText(button) {
-            const card = button.closest('.card');
-            card.classList.toggle('expanded');
-            button.textContent = card.classList.contains('expanded') ? 'Read Less' : 'Read More';
         }
 
         fetchRedditData();
