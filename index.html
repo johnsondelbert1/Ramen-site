@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shelbee's Hub</title>
+    <!-- Link to Material Design Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet">
     <style>
         :root {
             --primary-color: #6a4c8c;
@@ -64,6 +66,12 @@
             font-weight: bold;
         }
 
+        .nav-item i {
+            font-size: 24px;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
         /* Card styling */
         .card {
             background-color: var(--card-background);
@@ -108,8 +116,14 @@
 
     <!-- Navigation Bar -->
     <nav class="bottom-nav">
-        <a class="nav-item active" data-tab="reddit" onclick="switchTab('reddit')">Reddit</a>
-        <a class="nav-item" data-tab="tumblr" onclick="switchTab('tumblr')">Tumblr</a>
+        <!-- Reddit Nav Item with Icon -->
+        <a class="nav-item active" data-tab="reddit" onclick="switchTab('reddit')">
+            <i class="mdi mdi-reddit" style="font-size: 24px;"></i> Reddit
+        </a>
+        <!-- Tumblr Nav Item with Noodles Icon -->
+        <a class="nav-item" data-tab="tumblr" onclick="switchTab('tumblr')">
+            <i class="mdi mdi-noodles" style="font-size: 24px;"></i> Tumblr
+        </a>
     </nav>
 
     <script>
