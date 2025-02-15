@@ -90,11 +90,31 @@
             display: block;
         }
 
-        /* Grid */
+        /* Grid Layout */
         .posts-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
+            transition: all 0.3s ease;
+        }
+
+        /* Media Queries for responsive design */
+        @media (min-width: 600px) {
+            .posts-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 900px) {
+            .posts-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .posts-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
     </style>
 </head>
@@ -128,7 +148,7 @@
             document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
         }
 
-        // Fetch Reddit posts
+        // Fetch Reddit posts (only with images)
         async function fetchRedditData() {
             const redditPosts = document.getElementById('reddit-posts');
             try {
@@ -136,7 +156,7 @@
                 const data = await response.json();
                 const posts = data.data.children;
 
-                redditPosts.innerHTML = ''; // Clear previous posts
+                redditPosts.innerHTML = ''; // Clear previous posts to avoid duplicates
 
                 // Loop through Reddit posts and filter out those without images
                 posts.forEach(post => {
