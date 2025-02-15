@@ -86,15 +86,16 @@
             box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        /* Ensure images within Tumblr text posts fit within the parent container */
-        .text-post img {
+        /* Ensure images within Tumblr and Reddit posts fit within the parent container */
+        .text-post img,
+        .reddit-post img {
             width: 100%;
             height: auto;
             max-width: 100%;
             object-fit: contain;
         }
 
-        /* Styling for Tumblr text posts */
+        /* Styling for Tumblr and Reddit text posts */
         .window {
             background-color: rgba(255, 255, 255, 0.8);
             border-radius: 10px;
@@ -201,7 +202,7 @@
             }
         }
 
-        // Function to fetch Reddit posts from the ramen subreddit
+        // Function to fetch Reddit posts from the ramen subreddit (only image posts)
         async function fetchRedditData() {
             const redditPosts = document.getElementById('reddit-posts');
             const subreddit = 'ramen'; // Subreddit to fetch from
@@ -216,29 +217,31 @@
 
                 posts.forEach(post => {
                     const postData = post.data;
-                    const card = document.createElement('div');
-                    card.className = 'window';
 
-                    const postTitle = postData.title || 'Untitled';
-                    const postLink = `https://www.reddit.com${postData.permalink}`;
-                    const postImage = postData.preview ? postData.preview.images[0].source.url : null;
+                    // Only show posts with images
+                    if (postData.preview && postData.preview.images.length > 0) {
+                        const card = document.createElement('div');
+                        card.className = 'window reddit-post';
 
-                    let postContent = `
-                        <div class="window-header">${postTitle}</div>
-                        <div class="window-body">
-                            <a href="${postLink}" target="_blank">Read more</a>
-                        </div>
-                    `;
+                        const postTitle = postData.title || 'Untitled';
+                        const postLink = `https://www.reddit.com${postData.permalink}`;
+                        const postImage = postData.preview.images[0].source.url;
 
-                    if (postImage) {
+                        let postContent = `
+                            <div class="window-header">${postTitle}</div>
+                            <div class="window-body">
+                                <a href="${postLink}" target="_blank">Read more</a>
+                            </div>
+                        `;
+
                         postContent = `
                             <img src="${postImage}" alt="Post image" />
                             ${postContent}
                         `;
-                    }
 
-                    card.innerHTML = postContent;
-                    redditPosts.appendChild(card);
+                        card.innerHTML = postContent;
+                        redditPosts.appendChild(card);
+                    }
                 });
             } catch (error) {
                 redditPosts.innerHTML = `<p style="color: red;">Failed to load Reddit posts.</p>`;
