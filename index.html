@@ -129,17 +129,17 @@
 <body>
 
     <div class="container">
+        <div id="tumblr-posts" class="posts-container"></div>
         <div id="reddit-posts" class="posts-container hidden"></div>
-        <div id="tumblr-posts" class="posts-container hidden"></div>
     </div>
 
     <!-- Navigation Bar -->
     <nav class="bottom-nav">
-        <a class="nav-item active" data-tab="reddit" onclick="switchTab('reddit')">
-            <i class="mdi mdi-reddit"></i> Reddit
-        </a>
-        <a class="nav-item" data-tab="tumblr" onclick="switchTab('tumblr')">
+        <a class="nav-item active" data-tab="tumblr" onclick="switchTab('tumblr')">
             <i class="mdi mdi-noodles"></i> Tumblr
+        </a>
+        <a class="nav-item" data-tab="reddit" onclick="switchTab('reddit')">
+            <i class="mdi mdi-reddit"></i> Reddit
         </a>
     </nav>
 
@@ -258,8 +258,10 @@
             }
         }
 
-        fetchRedditData(); // Call the function to load the Reddit posts
+        // Set Tumblr as the default active tab and fetch posts
+        switchTab('tumblr');
         fetchTumblrData(); // Call the function to load the Tumblr posts
+        fetchRedditData(); // Call the function to load the Reddit posts
     </script>
 
 </body>
