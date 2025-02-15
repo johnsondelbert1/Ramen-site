@@ -76,6 +76,7 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            max-width: 100%; /* Ensure cards are not stretched beyond their container */
         }
 
         .card-header {
@@ -128,6 +129,12 @@
         @media (min-width: 1200px) {
             .card img {
                 max-height: 30vh; /* 30% of the viewport height for very large screens */
+            }
+
+            /* Adjust max-width for larger screens based on grid size */
+            .card {
+                max-width: 800px; /* Max width for large screens */
+                margin: 0 auto; /* Center the cards */
             }
         }
 
