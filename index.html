@@ -94,14 +94,27 @@
             font-size: 1rem;
             color: var(--text-color);
             word-wrap: break-word;
+            display: none; /* Hide text by default */
         }
 
-        /* Image styling for cards */
         .card img {
             width: 100%;
             border-radius: 8px;
             display: block;
         }
+
+        .read-more {
+            color: var(--accent-color);
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Show the text when expanded */
+        .expanded .card-body {
+            display: block;
+        }
+
     </style>
 </head>
 
@@ -162,11 +175,8 @@
 
                     let postContent = `
                         <div class="card-header">${postTitle}</div>
-                        <div class="card-body">
-                            <p>Subreddit: ${postSubreddit}</p>
-                            <p>${postBody}</p>
-                            <a href="${postUrl}" target="_blank">Read more</a>
-                        </div>
+                        <div class="card-body">${postBody}</div>
+                        <a href="${postUrl}" target="_blank">Read more</a>
                     `;
 
                     if (postImage) {
@@ -176,7 +186,8 @@
                         `;
                     }
 
-                    card.innerHTML = postContent;
+                    const readMoreButton = postBody ? `<a href="#" class="read-more" onclick="toggleText(this)">Read More</a>` : '';
+                    card.innerHTML = postContent + readMoreButton;
                     redditPosts.appendChild(card);
                 });
             } catch {
@@ -219,12 +230,20 @@
                         `;
                     }
 
-                    card.innerHTML = postContent;
+                    const readMoreButton = postBody ? `<a href="#" class="read-more" onclick="toggleText(this)">Read More</a>` : '';
+                    card.innerHTML = postContent + readMoreButton;
                     tumblrPosts.appendChild(card);
                 });
             } catch {
                 tumblrPosts.innerHTML = `<p style="color: red;">Failed to load Tumblr posts.</p>`;
             }
+        }
+
+        // Toggle function to show/hide the post text
+        function toggleText(button) {
+            const card = button.closest('.card');
+            card.classList.toggle('expanded');
+            button.textContent = card.classList.contains('expanded') ? 'Read Less' : 'Read More';
         }
 
         fetchRedditData();
