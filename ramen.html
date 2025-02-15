@@ -19,17 +19,19 @@
             font-family: Arial, sans-serif;
             text-align: center;
             flex-direction: column;
-            overflow: hidden; /* Ensure nothing overflows */
+            overflow: hidden;
         }
 
         .content {
-            background-color: rgba(0, 0, 0, 0.5); /* Add some transparency to the background */
+            background-color: rgba(0, 0, 0, 0.5);
             padding: 20px;
             border-radius: 10px;
             width: 100%;
             max-width: 1000px;
             box-sizing: border-box;
             margin: 10px;
+            height: 90vh;
+            overflow-y: auto;
         }
 
         h1 {
@@ -41,7 +43,6 @@
             font-size: 1.25em;
         }
 
-        /* Style for the start menu and taskbar */
         .start-button {
             font-size: 30px;
             padding: 10px;
@@ -79,7 +80,6 @@
             color: white;
         }
 
-        /* Taskbar with navigation */
         .taskbar {
             position: fixed;
             bottom: 0;
@@ -117,12 +117,10 @@
             background-color: #d4af7f;
         }
 
-        /* Hide content initially */
         .hidden {
             display: none;
         }
 
-        /* Tumblr post window */
         .window {
             background-color: rgba(0, 0, 0, 0.6);
             border-radius: 10px;
@@ -134,7 +132,6 @@
             box-sizing: border-box;
         }
 
-        /* Image post styling */
         .photo-post img {
             width: 100%;
             height: auto;
@@ -143,7 +140,6 @@
             margin-bottom: 10px;
         }
 
-        /* Quote post styling */
         .quote-post blockquote {
             font-style: italic;
             color: #d4af7f;
@@ -152,7 +148,19 @@
             font-size: 14px;
         }
 
-        /* Responsive design */
+        .window {
+            margin: 20px auto;
+            padding: 15px;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        .ramen-logo {
+            width: 150px;
+            height: auto;
+            margin: 20px;
+        }
+
         @media (max-width: 768px) {
             .start-button {
                 font-size: 24px;
@@ -170,16 +178,32 @@
             .content {
                 padding: 15px;
             }
+
+            .window {
+                width: 100%;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Content area with ramen noodle background -->
+    <!-- SVG Logo for the Ramen -->
+    <svg class="ramen-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="45" fill="brown" />
+        <rect x="15" y="60" width="70" height="10" fill="wheat" />
+        <circle cx="35" cy="50" r="6" fill="yellow" />
+        <circle cx="65" cy="50" r="6" fill="yellow" />
+        <path d="M30,50 Q40,40 50,50 T70,50" stroke="white" stroke-width="2" fill="transparent" />
+    </svg>
+
     <div class="content">
         <h1>Welcome to the Ramen World!</h1>
         <p>Enjoy your noodles!</p>
+
+        <!-- Example of content with posts -->
+        <div id="tumblr-posts" class="posts-container"></div>
+        <div id="reddit-posts" class="posts-container hidden"></div>
     </div>
 
     <!-- Start Menu Button -->
@@ -203,10 +227,6 @@
         </div>
     </div>
 
-    <!-- Tumblr and Reddit Posts -->
-    <div id="tumblr-posts" class="posts-container"></div>
-    <div id="reddit-posts" class="posts-container hidden"></div>
-
     <script>
         // Toggle the start menu visibility
         function toggleStartMenu() {
@@ -214,16 +234,10 @@
             menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
         }
 
-        // Switch between Reddit and Tumblr content
-        function switchTab(tab) {
-            document.querySelectorAll('.posts-container').forEach(t => t.classList.add('hidden'));
-            document.getElementById(`${tab}-posts`).classList.remove('hidden');
-        }
-
         // Fetch Tumblr posts from multiple blogs and support all post types (NPF)
         async function fetchTumblrData() {
             const tumblrPosts = document.getElementById('tumblr-posts');
-            const blogs = ['ramen-tokyo', 'worldudon', 'udonangya']; // List of blogs to fetch from
+            const blogs = ['ramen-tokyo', 'worldudon', 'udonangya'];
             const apiKey = 'ZGuu8GZuo6jmos0wHBgUG4zpfdzehIBSZvXECK3wU788LrjCcN';
 
             try {
@@ -234,31 +248,27 @@
                     const response = await fetch(`https://api.tumblr.com/v2/blog/${blog}.tumblr.com/posts?api_key=${apiKey}`);
                     const data = await response.json();
                     const posts = data.response.posts;
-                    allPosts = allPosts.concat(posts); // Combine posts from all blogs
+                    allPosts = allPosts.concat(posts);
                 }
 
                 tumblrPosts.innerHTML = '';
 
-                // Display each post as a window with the appropriate class
                 allPosts.forEach(post => {
                     const card = document.createElement('div');
-                    const postType = post.type; // Get the post type
+                    const postType = post.type;
                     card.className = `window ${postType}-post`;
 
-                    // Ensure post title is used, if missing use 'Untitled'
                     const postTitle = post.title || 'Untitled';
                     const postBody = post.body || '';
                     const postLink = post.post_url;
                     const postImage = post.photos && post.photos.length > 0 ? post.photos[0].alt_sizes[0].url : null;
 
-                    // Construct the post content based on the post type
                     let postContent = `
                         <div class="window-header">${postTitle}</div>
                         <div class="window-body">${postBody}</div>
                         <a href="${postLink}" target="_blank">Read more...</a>
                     `;
 
-                    // If the post type is 'photo', include the image
                     if (postType === 'photo' && postImage) {
                         postContent = `
                             <div class="window-header">${postTitle}</div>
@@ -270,7 +280,6 @@
                         `;
                     }
 
-                    // If the post type is 'quote', display the quote in a blockquote
                     if (postType === 'quote') {
                         postContent = `
                             <div class="window-header">${postTitle}</div>
@@ -296,27 +305,34 @@
             const subreddit = 'ramen';
 
             try {
-                const response = await fetch(`https://www.reddit.com/r/${subreddit}.json`);
+                const response = await fetch(`https://www.reddit.com/r/${subreddit}/top.json?limit=5`);
                 const data = await response.json();
                 const posts = data.data.children;
 
                 redditPosts.innerHTML = '';
 
-                // Display each Reddit post
                 posts.forEach(post => {
                     const card = document.createElement('div');
-                    card.className = 'window';
-
                     const postTitle = post.data.title;
-                    const postBody = post.data.selftext || 'No description';
-                    const postLink = `https://www.reddit.com${post.data.permalink}`;
+                    const postUrl = post.data.url;
+                    const postImage = post.data.url;
 
-                    card.innerHTML = `
+                    let postContent = `
                         <div class="window-header">${postTitle}</div>
-                        <div class="window-body">${postBody}</div>
-                        <a href="${postLink}" target="_blank">Read more...</a>
+                        <div class="window-body"><a href="${postUrl}" target="_blank">Go to post</a></div>
                     `;
 
+                    if (postImage && postImage.endsWith('.jpg')) {
+                        postContent = `
+                            <div class="window-header">${postTitle}</div>
+                            <div class="photo-post">
+                                <img src="${postImage}" alt="Image from Reddit">
+                            </div>
+                            <div class="window-body"><a href="${postUrl}" target="_blank">Go to post</a></div>
+                        `;
+                    }
+
+                    card.innerHTML = postContent;
                     redditPosts.appendChild(card);
                 });
 
@@ -325,7 +341,7 @@
             }
         }
 
-        // Call fetch functions to load posts
+        // Fetch Tumblr and Reddit data on page load
         fetchTumblrData();
         fetchRedditData();
     </script>
