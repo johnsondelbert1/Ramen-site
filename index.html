@@ -29,41 +29,13 @@
             padding: 20px;
         }
 
-        /* Ensure content is visible */
+        /* Grid Layout for posts */
         .posts-container {
-            display: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
         }
 
-        .posts-container.active {
-            display: block;
-        }
-
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background-color: var(--nav-bar-background);
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 0;
-        }
-
-        .nav-item {
-            padding: 10px;
-            flex-grow: 1;
-            text-align: center;
-            color: var(--text-color);
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .nav-item.active {
-            color: var(--indicator-color);
-            font-weight: bold;
-        }
-
-        /* Card styling */
         .card {
             background-color: var(--card-background);
             border-radius: 8px;
@@ -91,6 +63,31 @@
             width: 100%;
             border-radius: 8px;
             display: block;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: var(--nav-bar-background);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+        }
+
+        .nav-item {
+            padding: 10px;
+            flex-grow: 1;
+            text-align: center;
+            color: var(--text-color);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--indicator-color);
+            font-weight: bold;
         }
     </style>
 </head>
@@ -191,30 +188,20 @@
                     const postImage = post.photos ? post.photos[0].alt_sizes[0].url : null;
 
                     // Handling different types of posts in the Neue Post Format
-                    if (post.type === 'photo') {
-                        let postContent = `
-                            <div class="card-header">${postTitle}</div>
-                            <div class="card-body">${postBody}</div>
+                    let postContent = `
+                        <div class="card-header">${postTitle}</div>
+                        <div class="card-body">${postBody}</div>
+                        <a href="${postLink}" target="_blank">Read more</a>
+                    `;
+
+                    if (postImage) {
+                        postContent = `
                             <img src="${postImage}" alt="Post image" />
-                            <a href="${postLink}" target="_blank">Read more</a>
+                            ${postContent}
                         `;
-                        card.innerHTML = postContent;
-                    } else if (post.type === 'text') {
-                        let postContent = `
-                            <div class="card-header">${postTitle}</div>
-                            <div class="card-body">${postBody}</div>
-                            <a href="${postLink}" target="_blank">Read more</a>
-                        `;
-                        card.innerHTML = postContent;
-                    } else {
-                        let postContent = `
-                            <div class="card-header">${postTitle}</div>
-                            <div class="card-body">${postBody}</div>
-                            <a href="${postLink}" target="_blank">Read more</a>
-                        `;
-                        card.innerHTML = postContent;
                     }
 
+                    card.innerHTML = postContent;
                     tumblrPosts.appendChild(card);
                 });
             } catch {
