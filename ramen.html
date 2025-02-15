@@ -19,21 +19,26 @@
             font-family: Arial, sans-serif;
             text-align: center;
             flex-direction: column;
+            overflow: hidden; /* Ensure nothing overflows */
         }
 
         .content {
             background-color: rgba(0, 0, 0, 0.5); /* Add some transparency to the background */
-            padding: 30px;
+            padding: 20px;
             border-radius: 10px;
+            width: 100%;
+            max-width: 1000px;
+            box-sizing: border-box;
+            margin: 10px;
         }
 
         h1 {
-            font-size: 3em;
+            font-size: 2.5em;
             margin-bottom: 20px;
         }
 
         p {
-            font-size: 1.5em;
+            font-size: 1.25em;
         }
 
         /* Style for the start menu and taskbar */
@@ -45,12 +50,13 @@
             border: none;
             border-radius: 5px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
         }
 
         .start-menu-items {
             display: none;
             position: absolute;
-            bottom: 50px;
+            bottom: 80px;
             left: 10px;
             background-color: #f0f0f0;
             border: 1px solid #d4af7f;
@@ -85,12 +91,15 @@
             display: flex;
             justify-content: center;
             font-family: Arial, sans-serif;
+            flex-wrap: wrap;
         }
 
         .taskbar-nav {
             display: flex;
             justify-content: space-evenly;
             width: 100%;
+            flex-wrap: wrap;
+            box-sizing: border-box;
         }
 
         .taskbar-nav a {
@@ -101,6 +110,7 @@
             font-weight: bold;
             border-radius: 5px;
             transition: background-color 0.3s ease;
+            margin: 5px;
         }
 
         .taskbar-nav a:hover {
@@ -119,6 +129,9 @@
             margin-bottom: 20px;
             padding: 20px;
             color: white;
+            max-width: 100%;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         /* Image post styling */
@@ -137,6 +150,26 @@
             border-left: 4px solid #d4af7f;
             padding-left: 10px;
             font-size: 14px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .start-button {
+                font-size: 24px;
+            }
+
+            .taskbar-nav a {
+                font-size: 12px;
+                padding: 8px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .content {
+                padding: 15px;
+            }
         }
     </style>
 </head>
@@ -248,20 +281,6 @@
                         `;
                     }
 
-                    // If the post type is 'video', display the embedded video
-                    if (postType === 'video' && post.video_url) {
-                        postContent = `
-                            <div class="window-header">${postTitle}</div>
-                            <div class="video-post">
-                                <video controls>
-                                    <source src="${post.video_url}" type="video/mp4">
-                                    Your browser does not support the video tag.
-                                </video>
-                            </div>
-                            <a href="${postLink}" target="_blank">Read more...</a>
-                        `;
-                    }
-
                     card.innerHTML = postContent;
                     tumblrPosts.appendChild(card);
                 });
@@ -277,43 +296,28 @@
             const subreddit = 'ramen';
 
             try {
-                const response = await fetch(`https://www.reddit.com/r/${subreddit}/new.json`);
+                const response = await fetch(`https://www.reddit.com/r/${subreddit}.json`);
                 const data = await response.json();
                 const posts = data.data.children;
 
                 redditPosts.innerHTML = '';
 
-                // Display only posts with images
+                // Display each Reddit post
                 posts.forEach(post => {
-                    const postImage = post.data.url_overridden_by_dest;
+                    const card = document.createElement('div');
+                    card.className = 'window';
 
-                    if (postImage) {
-                        const card = document.createElement('div');
-                        const postTitle = post.data.title;
-                        const postBody = post.data.selftext || 'No content available';
-                        const postLink = `https://www.reddit.com${post.data.permalink}`;
+                    const postTitle = post.data.title;
+                    const postBody = post.data.selftext || 'No description';
+                    const postLink = `https://www.reddit.com${post.data.permalink}`;
 
-                        let postContent = `
-                            <div class="window-header">${postTitle}</div>
-                            <div class="window-body">${postBody}</div>
-                            <a href="${postLink}" target="_blank">Read more...</a>
-                        `;
+                    card.innerHTML = `
+                        <div class="window-header">${postTitle}</div>
+                        <div class="window-body">${postBody}</div>
+                        <a href="${postLink}" target="_blank">Read more...</a>
+                    `;
 
-                        // If the post has an image, display it
-                        if (postImage) {
-                            postContent = `
-                                <div class="window-header">${postTitle}</div>
-                                <div class="photo-post">
-                                    <img src="${postImage}" alt="Image from Reddit">
-                                </div>
-                                <div class="window-body">${postBody}</div>
-                                <a href="${postLink}" target="_blank">Read more...</a>
-                            `;
-                        }
-
-                        card.innerHTML = postContent;
-                        redditPosts.appendChild(card);
-                    }
+                    redditPosts.appendChild(card);
                 });
 
             } catch (error) {
@@ -321,11 +325,9 @@
             }
         }
 
-        // Call the fetch functions when the page loads
-        window.onload = function () {
-            fetchTumblrData();
-            fetchRedditData();
-        }
+        // Call fetch functions to load posts
+        fetchTumblrData();
+        fetchRedditData();
     </script>
 
 </body>
