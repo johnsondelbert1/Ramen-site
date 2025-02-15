@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shelbee's Hub</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet">
     <style>
         :root {
             --primary-color: #6a4c8c;
@@ -25,12 +26,15 @@
         }
 
         .container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 16px;
-            padding: 16px;
-            max-width: 1200px;
-            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .posts-container {
+            display: none;
+        }
+
+        .posts-container.active {
+            display: block;
         }
 
         .bottom-nav {
@@ -50,13 +54,6 @@
             color: var(--text-color);
             text-decoration: none;
             cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .nav-item i {
-            font-size: 24px;
         }
 
         .nav-item.active {
@@ -64,40 +61,20 @@
             font-weight: bold;
         }
 
-        .posts-container {
-            display: none;
-        }
-
-        .posts-container.active {
-            display: grid;
-        }
-
         .card {
             background-color: var(--card-background);
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            transition: transform 0.2s ease-in-out;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-        }
-
-        .card img {
-            width: 100%;
-            object-fit: cover;
-            max-height: 40vh;
-            display: block;
         }
 
         .card-header {
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             font-weight: bold;
             padding: 16px;
             background-color: var(--primary-color);
             color: var(--text-color);
-            cursor: pointer;
         }
 
         .card-body {
@@ -105,22 +82,39 @@
             font-size: 1rem;
             color: var(--text-color);
             word-wrap: break-word;
-            display: none;
         }
 
-        .card-body.expanded {
+        .card img {
+            width: 100%;
+            object-fit: cover;
             display: block;
-            animation: fadeIn 0.3s ease-in-out;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        button {
+            padding: 10px;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+        }
+
+        button:hover {
+            background-color: var(--accent-color);
         }
     </style>
 </head>
+
 <body>
 
+    <div class="container">
+        <div id="reddit-posts" class="posts-container active"></div>
+        <div id="tumblr-posts" class="posts-container"></div>
+    </div>
+
+    <!-- Navigation Bar -->
     <nav class="bottom-nav">
         <a class="nav-item active" data-tab="reddit" onclick="switchTab('reddit')">
             <i class="mdi mdi-reddit"></i> Reddit
@@ -130,12 +124,136 @@
         </a>
     </nav>
 
-    <div class="container">
-        <div id="reddit-posts" class="posts-container active"></div>
-        <div id="tumblr-posts" class="posts-container"></div>
-    </div>
-
     <script>
+        const CACHE_EXPIRATION = 60 * 60 * 1000; // 1 hour
+        const TUMBLR_API_KEY = "ZGuu8GZuo6jmos0wHBgUG4zpfdzehIBSZvXECK3wU788LrjCcN";
+        const REDDIT_URL = "https://www.reddit.com/r/ramen/top.json?limit=10";
+        const TUMBLR_URL = "https://api.tumblr.com/v2/blog/ramen-tokyo.tumblr.com/posts?api_key=" + TUMBLR_API_KEY;
+
+        let tumblrOffset = 0;
+        const tumblrPosts = document.getElementById('tumblr-posts');
+        const redditPosts = document.getElementById('reddit-posts');
+
+        function getCachedData(key) {
+            const cached = localStorage.getItem(key);
+            if (!cached) return null;
+
+            const { timestamp, data } = JSON.parse(cached);
+            if (Date.now() - timestamp > CACHE_EXPIRATION) {
+                localStorage.removeItem(key);
+                return null;
+            }
+            return data;
+        }
+
+        function cacheData(key, data) {
+            localStorage.setItem(key, JSON.stringify({ timestamp: Date.now(), data }));
+        }
+
+        // Fetch Reddit Posts (Only Posts with Images)
+        async function fetchRedditPosts() {
+            const cached = getCachedData("reddit_posts");
+            if (cached) return displayRedditPosts(cached);
+
+            try {
+                const response = await fetch(REDDIT_URL, {
+                    headers: { 'User-Agent': 'shelbeebot (johnsondelbert1@gmail.com)' }
+                });
+                if (!response.ok) throw new Error(`Reddit API error: ${response.status}`);
+
+                const json = await response.json();
+                const posts = json.data.children.filter(post => post.data.preview);
+
+                cacheData("reddit_posts", posts);
+                displayRedditPosts(posts);
+            } catch (error) {
+                console.error("Failed to fetch Reddit posts:", error);
+                redditPosts.innerHTML = `<p style="color: red;">Failed to load Reddit posts.</p>`;
+            }
+        }
+
+        function displayRedditPosts(posts) {
+            redditPosts.innerHTML = '';
+            posts.forEach(post => {
+                const card = document.createElement('div');
+                card.className = 'card';
+
+                const postTitle = post.data.title;
+                const postUrl = post.data.url;
+                const postImage = post.data.preview.images[0].source.url;
+
+                card.innerHTML = `
+                    <a href="${postUrl}" target="_blank">
+                        <img src="${postImage}" style="width: 100%; object-fit: cover;" alt="Post image">
+                    </a>
+                    <div class="card-header">${postTitle}</div>
+                `;
+                redditPosts.appendChild(card);
+            });
+        }
+
+        // Fetch Tumblr Posts with Pagination
+        async function fetchTumblrPosts(loadMore = false) {
+            if (!loadMore) {
+                const cached = getCachedData("tumblr_posts");
+                if (cached) return displayTumblrPosts(cached);
+            }
+
+            try {
+                const response = await fetch(`${TUMBLR_URL}&offset=${tumblrOffset}&limit=10`, {
+                    headers: { 'User-Agent': 'shelbeebot (johnsondelbert1@gmail.com)' }
+                });
+                if (!response.ok) throw new Error(`Tumblr API error: ${response.status}`);
+
+                const json = await response.json();
+                if (!json.response || !json.response.posts) throw new Error("Invalid Tumblr response");
+
+                const posts = json.response.posts;
+                if (!loadMore) cacheData("tumblr_posts", posts);
+                
+                displayTumblrPosts(posts, loadMore);
+                tumblrOffset += 10;
+            } catch (error) {
+                console.error("Failed to fetch Tumblr posts:", error);
+                tumblrPosts.innerHTML = `<p style="color: red;">Failed to load Tumblr posts.</p>`;
+            }
+        }
+
+        function displayTumblrPosts(posts, append = false) {
+            if (!append) tumblrPosts.innerHTML = '';
+
+            posts.forEach(post => {
+                const card = document.createElement('div');
+                card.className = 'card';
+
+                const postTitle = post.summary || 'Untitled';
+                const postLink = post.post_url;
+                const postImage = post.photos ? post.photos[0].original_size.url : null;
+                const postType = post.type || 'Unknown Type';
+
+                let postContent = `<div class="card-header">${postTitle}</div><p><strong>Type:</strong> ${postType}</p>`;
+
+                if (postImage) {
+                    postContent = `<a href="${postLink}" target="_blank">
+                        <img src="${postImage}" style="width: 100%; object-fit: cover;" alt="Post image">
+                    </a>` + postContent;
+                }
+
+                card.innerHTML = postContent;
+                tumblrPosts.appendChild(card);
+            });
+
+            if (!document.getElementById('tumblr-load-more')) {
+                const loadMoreBtn = document.createElement('button');
+                loadMoreBtn.id = 'tumblr-load-more';
+                loadMoreBtn.textContent = "Load More";
+                loadMoreBtn.style.cssText = "display: block; margin: 20px auto; padding: 10px;";
+                loadMoreBtn.onclick = () => fetchTumblrPosts(true);
+                tumblrPosts.appendChild(loadMoreBtn);
+            }
+        }
+
+        // Switch Between Tabs (Reddit / Tumblr)
         function switchTab(tab) {
             document.querySelectorAll('.posts-container').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(link => link.classList.remove('active'));
@@ -144,85 +262,10 @@
             document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
         }
 
-        async function fetchRedditData() {
-            const redditPosts = document.getElementById('reddit-posts');
-            try {
-                const response = await fetch(`https://www.reddit.com/r/ramen/top.json?limit=10`, {
-                    headers: { "User-Agent": "Shelbee Bot (johnsondelbert1@gmail.com)" }
-                });
-                const data = await response.json();
-                const posts = data.data.children.filter(post => post.data.preview);
-
-                redditPosts.innerHTML = '';
-                posts.forEach(post => {
-                    const card = document.createElement('div');
-                    card.className = 'card';
-
-                    const postTitle = post.data.title;
-                    const postUrl = post.data.url;
-                    const postBody = post.data.selftext;
-                    const postImage = post.data.preview.images[0].source.url;
-
-                    let postContent = `
-                        <a href="${postUrl}" target="_blank">
-                            <img src="${postImage}" alt="Post image" />
-                        </a>
-                        <div class="card-header" onclick="toggleContent(this)">${postTitle}</div>
-                        <div class="card-body">${postBody}</div>
-                    `;
-
-                    card.innerHTML = postContent;
-                    redditPosts.appendChild(card);
-                });
-            } catch {
-                redditPosts.innerHTML = `<p style="color: red;">Failed to load Reddit posts.</p>`;
-            }
-        }
-
-        async function fetchTumblrData() {
-            const tumblrPosts = document.getElementById('tumblr-posts');
-            try {
-                const response = await fetch(`https://api.tumblr.com/v2/blog/ramen-tokyo.tumblr.com/posts?api_key=ZGuu8GZuo6jmos0wHBgUG4zpfdzehIBSZvXECK3wU788LrjCcN`, {
-                    headers: { "User-Agent": "Shelbee Bot (johnsondelbert1@gmail.com)" }
-                });
-                const data = await response.json();
-                const posts = data.response.posts;
-
-                tumblrPosts.innerHTML = '';
-                posts.forEach(post => {
-                    const card = document.createElement('div');
-                    card.className = 'card';
-
-                    const postTitle = post.trail && post.trail[0]?.content ? post.trail[0].content[0].text : "Untitled";
-                    const postBody = post.trail && post.trail[0]?.content ? post.trail[0].content.map(c => c.text).join('<br>') : "";
-                    const postLink = post.post_url;
-                    const postType = post.type;
-                    const postImage = post.photos ? post.photos[0].original_size.url : null;
-
-                    let postContent = `
-                        ${postImage ? `<img src="${postImage}" alt="Tumblr post image" />` : ""}
-                        <div class="card-header" onclick="toggleContent(this)">${postTitle}</div>
-                        <div class="card-body">${postBody}</div>
-                        <p style="padding: 10px; font-size: 0.9rem;">Post type: ${postType}</p>
-                        <a href="${postLink}" target="_blank">Read more</a>
-                    `;
-
-                    card.innerHTML = postContent;
-                    tumblrPosts.appendChild(card);
-                });
-            } catch {
-                tumblrPosts.innerHTML = `<p style="color: red;">Failed to load Tumblr posts.</p>`;
-            }
-        }
-
-        function toggleContent(header) {
-            const body = header.nextElementSibling;
-            body.classList.toggle('expanded');
-        }
-
-        fetchRedditData();
-        fetchTumblrData();
+        document.getElementById('reddit-posts').classList.add('active');
+        fetchRedditPosts();
+        fetchTumblrPosts();
     </script>
-
 </body>
+
 </html>
