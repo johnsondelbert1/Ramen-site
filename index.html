@@ -31,16 +31,16 @@
             gap: 20px;
         }
 
+        /* Hide content until active */
         .posts-container {
             display: none;
         }
 
         .posts-container.active {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
         }
 
+        /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -58,7 +58,6 @@
             color: var(--text-color);
             text-decoration: none;
             cursor: pointer;
-            font-size: 1.2rem;
         }
 
         .nav-item.active {
@@ -66,12 +65,12 @@
             font-weight: bold;
         }
 
+        /* Card Styling */
         .card {
             background-color: var(--card-background);
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            max-width: 10vw;
         }
 
         .card-header {
@@ -88,22 +87,14 @@
             font-size: 1rem;
             color: var(--text-color);
             word-wrap: break-word;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-in-out;
+            display: none;
         }
 
         .card img {
             width: 100%;
-            display: block;
             object-fit: cover;
             max-height: 50vh;
-        }
-
-        @media (min-width: 1024px) {
-            .card img {
-                max-height: 30vh;
-            }
+            display: block;
         }
     </style>
 </head>
@@ -117,6 +108,7 @@
         <div class="error" id="tumblr-error"></div>
     </div>
 
+    <!-- Navigation Bar -->
     <nav class="bottom-nav">
         <a class="nav-item active" data-tab="reddit" onclick="switchTab('reddit')">🔴</a>
         <a class="nav-item" data-tab="tumblr" onclick="switchTab('tumblr')">🍜</a>
@@ -131,6 +123,14 @@
             document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
         }
 
+        document.getElementById('reddit-posts').classList.add('active');
+
+        function togglePostContent(event) {
+            const body = event.target.nextElementSibling;
+            body.style.display = body.style.display === "block" ? "none" : "block";
+        }
+
+        // Fetch Reddit posts (Only posts with images)
         async function fetchRedditData() {
             const redditPosts = document.getElementById('reddit-posts');
             try {
@@ -138,22 +138,24 @@
                     headers: { 'User-Agent': 'ShelbeeBot (johnsondelbert1@gmail.com)' }
                 });
                 const data = await response.json();
-                const posts = data.data.children.filter(post => post.data.preview);
+                const posts = data.data.children;
 
                 redditPosts.innerHTML = '';
                 posts.forEach(post => {
+                    if (!post.data.preview) return;
+
                     const card = document.createElement('div');
                     card.className = 'card';
 
                     const postTitle = post.data.title;
-                    const postUrl = `https://www.reddit.com${post.data.permalink}`;
+                    const postUrl = post.data.url;
                     const postImage = post.data.preview.images[0].source.url;
 
                     card.innerHTML = `
                         <a href="${postUrl}" target="_blank">
-                            <img src="${postImage}" alt="Reddit Post Image" />
+                            <img src="${postImage}" alt="Post image" />
                         </a>
-                        <div class="card-header" onclick="toggleCollapse(this)">${postTitle}</div>
+                        <div class="card-header" onclick="togglePostContent(event)">${postTitle}</div>
                         <div class="card-body">${post.data.selftext}</div>
                     `;
 
@@ -164,11 +166,7 @@
             }
         }
 
-        function toggleCollapse(element) {
-            const body = element.nextElementSibling;
-            body.style.maxHeight = body.style.maxHeight ? null : body.scrollHeight + "px";
-        }
-
+        // Fetch Tumblr posts with NPF support
         async function fetchTumblrData() {
             const tumblrPosts = document.getElementById('tumblr-posts');
             try {
@@ -184,30 +182,35 @@
                     card.className = 'card';
 
                     let postTitle = post.summary || 'Untitled Post';
-                    let postBody = '';
-                    let postImage = null;
-                    let postLink = post.post_url;
+                    let postContent = '';
+                    let postImages = [];
                     let postType = post.type;
+                    let postLink = post.post_url;
 
-                    if (post.trail && post.trail.length > 0) {
-                        postBody = post.trail[0].content || '';
-                    }
-                    if (post.photos) {
-                        postImage = post.photos[0].original_size.url;
+                    if (post.content) {
+                        post.content.forEach(block => {
+                            if (block.type === "text") {
+                                postContent += `<p>${block.text}</p>`;
+                            } else if (block.type === "image") {
+                                postImages.push(block.media[0].url);
+                            } else if (block.type === "link") {
+                                postContent += `<p><a href="${block.url}" target="_blank">${block.title || block.url}</a></p>`;
+                            }
+                        });
                     }
 
-                    let postContent = `
-                        <div class="card-header">${postTitle}</div>
-                        <div class="card-body">${postBody}</div>
+                    let postHTML = `
+                        <div class="card-header" onclick="togglePostContent(event)">${postTitle}</div>
+                        <div class="card-body">${postContent}</div>
                         <p style="padding: 10px; font-size: 0.9rem; opacity: 0.7;">Post Type: ${postType}</p>
                         <a href="${postLink}" target="_blank">Read more</a>
                     `;
 
-                    if (postImage) {
-                        postContent = `<img src="${postImage}" alt="Post Image" />` + postContent;
+                    if (postImages.length > 0) {
+                        postHTML = postImages.map(img => `<img src="${img}" alt="Tumblr Image" />`).join('') + postHTML;
                     }
 
-                    card.innerHTML = postContent;
+                    card.innerHTML = postHTML;
                     tumblrPosts.appendChild(card);
                 });
             } catch {
@@ -220,4 +223,5 @@
     </script>
 
 </body>
+
 </html>
