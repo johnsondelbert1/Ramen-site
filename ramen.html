@@ -4,13 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ramen Noodle Background with Tumblr & Reddit</title>
+    <title>Ramen Noodle Blog</title>
     <style>
-        /* Apply the ramen noodle SVG background */
         body {
             margin: 0;
             height: 100vh;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200"><defs><linearGradient id="noodleColor" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#d4af7f;stop-opacity:1" /><stop offset="100%" style="stop-color:#f1c27d;stop-opacity:1" /></linearGradient></defs><g stroke="none" stroke-width="3" fill="url(#noodleColor)"><path d="M20,50 Q40,40 60,50 Q80,60 100,50 Q120,40 140,50 Q160,60 180,50" /><path d="M20,70 Q40,60 60,70 Q80,80 100,70 Q120,60 140,70 Q160,80 180,70" /><path d="M20,90 Q40,80 60,90 Q80,100 100,90 Q120,80 140,90 Q160,100 180,90" /><path d="M20,110 Q40,100 60,110 Q80,120 100,110 Q120,100 140,110 Q160,120 180,110" /><path d="M20,130 Q40,120 60,130 Q80,140 100,130 Q120,120 140,130 Q160,140 180,130" /><path d="M120,150 Q130,145 140,150 Q130,155 120,150" /></g></svg>') no-repeat center center;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200"><defs><linearGradient id="noodleColor" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#f8e71c;stop-opacity:1" /><stop offset="100%" style="stop-color:#f0c71f;stop-opacity:1" /></linearGradient></defs><g fill="url(#noodleColor)"><path d="M0,60 C20,40 60,80 80,60 C100,40 140,80 160,60 C180,40 220,80 240,60" stroke="none" stroke-width="2" fill="none" /> <path d="M0,100 C20,80 60,120 80,100 C100,80 140,120 160,100 C180,80 220,120 240,100" stroke="none" stroke-width="2" fill="none" /> <path d="M0,140 C20,120 60,160 80,140 C100,120 140,160 160,140 C180,120 220,160 240,140" stroke="none" stroke-width="2" fill="none" /> <path d="M0,180 C20,160 60,200 80,180 C100,160 140,200 160,180 C180,160 220,200 240,180" stroke="none" stroke-width="2" fill="none" /></g></svg>') no-repeat center center;
             background-size: cover;
             display: flex;
             justify-content: center;
@@ -39,205 +38,107 @@
             margin-bottom: 20px;
         }
 
-        p {
+        /* Tabs */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
             font-size: 1.25em;
         }
 
-        .start-button {
-            font-size: 30px;
-            padding: 10px;
+        .tab {
+            padding: 10px 20px;
             cursor: pointer;
-            background: #f1c27d;
+            background-color: #f1c27d;
             border: none;
             border-radius: 5px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-            margin-top: 20px;
+            margin: 0 10px;
+            font-size: 1.25em;
+            transition: background-color 0.3s;
         }
 
-        .start-menu-items {
-            display: none;
-            position: absolute;
-            bottom: 80px;
-            left: 10px;
-            background-color: #f0f0f0;
-            border: 1px solid #d4af7f;
-            border-radius: 5px;
-            padding: 10px;
-            width: 200px;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        .tab:hover {
+            background-color: #d4af7f;
         }
 
-        .start-menu-items a {
-            display: block;
-            padding: 5px;
-            color: #d4af7f;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .start-menu-items a:hover {
+        .active-tab {
             background-color: #d4af7f;
             color: white;
         }
 
+        /* Hide content by default */
+        .posts-container {
+            display: none;
+        }
+
+        /* Taskbar */
         .taskbar {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
             background-color: #f1c27d;
-            color: white;
-            padding: 10px 0;
-            display: flex;
-            justify-content: center;
-            font-family: Arial, sans-serif;
-            flex-wrap: wrap;
-        }
-
-        .taskbar-nav {
-            display: flex;
-            justify-content: space-evenly;
-            width: 100%;
-            flex-wrap: wrap;
-            box-sizing: border-box;
-        }
-
-        .taskbar-nav a {
-            color: white;
-            text-decoration: none;
+            color: black;
             padding: 10px;
-            font-size: 14px;
+            text-align: center;
+            font-size: 1.25em;
             font-weight: bold;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-            margin: 5px;
+            box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        .taskbar-nav a:hover {
-            background-color: #d4af7f;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .window {
-            background-color: rgba(0, 0, 0, 0.6);
-            border-radius: 10px;
-            margin-bottom: 20px;
-            padding: 20px;
-            color: white;
-            max-width: 100%;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .photo-post img {
+        /* Ensure images within Tumblr text posts fit within the parent container */
+        .text-post img {
             width: 100%;
             height: auto;
             max-width: 100%;
             object-fit: contain;
+        }
+
+        /* Styling for Tumblr text posts */
+        .window {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .window-header {
+            font-size: 1.5em;
             margin-bottom: 10px;
         }
 
-        .quote-post blockquote {
-            font-style: italic;
-            color: #d4af7f;
-            border-left: 4px solid #d4af7f;
-            padding-left: 10px;
-            font-size: 14px;
-        }
-
-        .window {
-            margin: 20px auto;
-            padding: 15px;
-            width: 90%;
-            max-width: 800px;
-        }
-
-        .ramen-logo {
-            width: 150px;
-            height: auto;
-            margin: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .start-button {
-                font-size: 24px;
-            }
-
-            .taskbar-nav a {
-                font-size: 12px;
-                padding: 8px;
-            }
-
-            h1 {
-                font-size: 2em;
-            }
-
-            .content {
-                padding: 15px;
-            }
-
-            .window {
-                width: 100%;
-            }
+        .window-body {
+            font-size: 1.1em;
+            margin-bottom: 15px;
         }
     </style>
 </head>
 
 <body>
-
-    <!-- SVG Logo for the Ramen -->
-    <svg class="ramen-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="45" fill="brown" />
-        <rect x="15" y="60" width="70" height="10" fill="wheat" />
-        <circle cx="35" cy="50" r="6" fill="yellow" />
-        <circle cx="65" cy="50" r="6" fill="yellow" />
-        <path d="M30,50 Q40,40 50,50 T70,50" stroke="white" stroke-width="2" fill="transparent" />
-    </svg>
-
     <div class="content">
-        <h1>Welcome to the Ramen World!</h1>
-        <p>Enjoy your noodles!</p>
+        <h1>Welcome to Ramen Blog</h1>
 
-        <!-- Example of content with posts -->
-        <div id="tumblr-posts" class="posts-container"></div>
-        <div id="reddit-posts" class="posts-container hidden"></div>
-    </div>
-
-    <!-- Start Menu Button -->
-    <div class="start-button" onclick="toggleStartMenu()">🍜</div>
-
-    <!-- Start Menu Items -->
-    <div class="start-menu-items">
-        <a href="https://ramen-tokyo.tumblr.com" target="_blank">Ramen Tokyo (ラーメン東京)</a>
-        <a href="https://worldudon.tumblr.com" target="_blank">World Udon (世界うどん)</a>
-        <a href="https://udonangya.tumblr.com" target="_blank">Udon Angya (うどんアンギャ)</a>
-        <a href="https://www.reddit.com/r/ramen" target="_blank">Ramen Subreddit (ラーメンサブレディット)</a>
-    </div>
-
-    <!-- Taskbar with links -->
-    <div class="taskbar">
-        <div class="taskbar-nav">
-            <a href="https://ramen-tokyo.tumblr.com" target="_blank">Ramen Tokyo (ラーメン東京)</a>
-            <a href="https://worldudon.tumblr.com" target="_blank">World Udon (世界うどん)</a>
-            <a href="https://udonangya.tumblr.com" target="_blank">Udon Angya (うどんアンギャ)</a>
-            <a href="https://www.reddit.com/r/ramen" target="_blank">Ramen Subreddit (ラーメンサブレディット)</a>
+        <!-- Tabs to switch between Tumblr and Reddit -->
+        <div class="tabs">
+            <button class="tab active-tab" id="tumblr-tab">Tumblr</button>
+            <button class="tab" id="reddit-tab">Reddit</button>
         </div>
+
+        <div id="tumblr-posts" class="posts-container"></div>
+        <div id="reddit-posts" class="posts-container"></div>
+    </div>
+
+    <!-- Taskbar -->
+    <div class="taskbar">
+        Ramen Blog 🥢
     </div>
 
     <script>
-        // Toggle the start menu visibility
-        function toggleStartMenu() {
-            const menu = document.querySelector('.start-menu-items');
-            menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
-        }
-
-        // Fetch Tumblr posts from multiple blogs and support all post types (NPF)
+        // Function to fetch and display Tumblr posts
         async function fetchTumblrData() {
             const tumblrPosts = document.getElementById('tumblr-posts');
-            const blogs = ['ramen-tokyo', 'worldudon', 'udonangya'];
+            const blogs = ['ramen-tokyo', 'worldudon', 'udonangya']; // List of blogs to fetch from
             const apiKey = 'ZGuu8GZuo6jmos0wHBgUG4zpfdzehIBSZvXECK3wU788LrjCcN';
 
             try {
@@ -248,104 +149,137 @@
                     const response = await fetch(`https://api.tumblr.com/v2/blog/${blog}.tumblr.com/posts?api_key=${apiKey}`);
                     const data = await response.json();
                     const posts = data.response.posts;
-                    allPosts = allPosts.concat(posts);
+                    allPosts = allPosts.concat(posts); // Combine posts from all blogs
                 }
 
                 tumblrPosts.innerHTML = '';
 
+                // Display each post as a window with the appropriate class
                 allPosts.forEach(post => {
                     const card = document.createElement('div');
-                    const postType = post.type;
+                    const postType = post.type; // Get the post type
                     card.className = `window ${postType}-post`;
 
+                    // Ensure post title is used, if missing use 'Untitled'
                     const postTitle = post.title || 'Untitled';
                     const postBody = post.body || '';
                     const postLink = post.post_url;
                     const postImage = post.photos && post.photos.length > 0 ? post.photos[0].alt_sizes[0].url : null;
 
+                    // Construct the post content based on the post type
                     let postContent = `
                         <div class="window-header">${postTitle}</div>
                         <div class="window-body">${postBody}</div>
-                        <a href="${postLink}" target="_blank">Read more...</a>
+                        <a href="${postLink}" target="_blank">Read more</a>
                     `;
 
-                    if (postType === 'photo' && postImage) {
-                        postContent = `
-                            <div class="window-header">${postTitle}</div>
-                            <div class="photo-post">
-                                <img src="${postImage}" alt="Image from Tumblr">
-                            </div>
-                            <div class="window-body">${postBody}</div>
-                            <a href="${postLink}" target="_blank">Read more...</a>
-                        `;
-                    }
-
-                    if (postType === 'quote') {
-                        postContent = `
-                            <div class="window-header">${postTitle}</div>
-                            <div class="quote-post">
-                                <blockquote>${postBody}</blockquote>
-                            </div>
-                            <a href="${postLink}" target="_blank">Read more...</a>
-                        `;
+                    // Handle different post types
+                    if (postType === 'text') {
+                        card.classList.add('text-post');
+                        if (postImage) {
+                            postContent = `
+                                <img src="${postImage}" alt="Post image" />
+                                ${postContent}
+                            `;
+                        }
+                    } else if (postType === 'photo') {
+                        card.classList.add('photo-post');
+                        postContent = `<img src="${postImage}" alt="Post image" />${postContent}`;
+                    } else if (postType === 'quote') {
+                        card.classList.add('quote-post');
+                        postContent = `<blockquote>${postBody}</blockquote>${postContent}`;
+                    } else if (postType === 'link') {
+                        card.classList.add('link-post');
+                        postContent = `<div class="window-body"><a href="${postLink}" target="_blank">${postTitle}</a></div>${postContent}`;
                     }
 
                     card.innerHTML = postContent;
                     tumblrPosts.appendChild(card);
                 });
-
             } catch (error) {
-                console.error('Error fetching Tumblr posts:', error);
+                tumblrPosts.innerHTML = `<p style="color: red;">Failed to load Tumblr posts.</p>`;
             }
         }
 
-        // Fetch Reddit posts from the Ramen subreddit
+        // Function to fetch Reddit posts from the ramen subreddit
         async function fetchRedditData() {
             const redditPosts = document.getElementById('reddit-posts');
-            const subreddit = 'ramen';
+            const subreddit = 'ramen'; // Subreddit to fetch from
+            const url = `https://www.reddit.com/r/${subreddit}/top.json?limit=10`;
 
             try {
-                const response = await fetch(`https://www.reddit.com/r/${subreddit}/top.json?limit=5`);
+                const response = await fetch(url);
                 const data = await response.json();
                 const posts = data.data.children;
 
                 redditPosts.innerHTML = '';
 
                 posts.forEach(post => {
+                    const postData = post.data;
                     const card = document.createElement('div');
-                    const postTitle = post.data.title;
-                    const postUrl = post.data.url;
-                    const postImage = post.data.url;
+                    card.className = 'window';
+
+                    const postTitle = postData.title || 'Untitled';
+                    const postLink = `https://www.reddit.com${postData.permalink}`;
+                    const postImage = postData.preview ? postData.preview.images[0].source.url : null;
 
                     let postContent = `
                         <div class="window-header">${postTitle}</div>
-                        <div class="window-body"><a href="${postUrl}" target="_blank">Go to post</a></div>
+                        <div class="window-body">
+                            <a href="${postLink}" target="_blank">Read more</a>
+                        </div>
                     `;
 
-                    if (postImage && postImage.endsWith('.jpg')) {
+                    if (postImage) {
                         postContent = `
-                            <div class="window-header">${postTitle}</div>
-                            <div class="photo-post">
-                                <img src="${postImage}" alt="Image from Reddit">
-                            </div>
-                            <div class="window-body"><a href="${postUrl}" target="_blank">Go to post</a></div>
+                            <img src="${postImage}" alt="Post image" />
+                            ${postContent}
                         `;
                     }
 
                     card.innerHTML = postContent;
                     redditPosts.appendChild(card);
                 });
-
             } catch (error) {
-                console.error('Error fetching Reddit posts:', error);
+                redditPosts.innerHTML = `<p style="color: red;">Failed to load Reddit posts.</p>`;
             }
         }
 
-        // Fetch Tumblr and Reddit data on page load
-        fetchTumblrData();
-        fetchRedditData();
-    </script>
+        // Function to handle tab switching
+        function switchTab(tabName) {
+            const tumblrTab = document.getElementById('tumblr-tab');
+            const redditTab = document.getElementById('reddit-tab');
+            const tumblrPosts = document.getElementById('tumblr-posts');
+            const redditPosts = document.getElementById('reddit-posts');
 
+            if (tabName === 'tumblr') {
+                tumblrTab.classList.add('active-tab');
+                redditTab.classList.remove('active-tab');
+                tumblrPosts.style.display = 'block';
+                redditPosts.style.display = 'none';
+            } else {
+                redditTab.classList.add('active-tab');
+                tumblrTab.classList.remove('active-tab');
+                redditPosts.style.display = 'block';
+                tumblrPosts.style.display = 'none';
+            }
+        }
+
+        // Set Tumblr as the default active tab and fetch posts
+        document.getElementById('tumblr-tab').addEventListener('click', () => {
+            switchTab('tumblr');
+            fetchTumblrData();
+        });
+
+        document.getElementById('reddit-tab').addEventListener('click', () => {
+            switchTab('reddit');
+            fetchRedditData();
+        });
+
+        // Initialize the page with Tumblr content
+        switchTab('tumblr');
+        fetchTumblrData();
+    </script>
 </body>
 
 </html>
