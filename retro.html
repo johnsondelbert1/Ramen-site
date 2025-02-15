@@ -68,45 +68,87 @@
             text-decoration: none;
         }
 
-        /* Navigation Bar */
-        .nav-bar {
+        /* Navigation Bar styled like Windows XP menu */
+        .start-menu {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
             background-color: #0078d4;
-            color: #ffffff;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .nav-item {
-            display: inline-block;
-            margin: 0 20px;
+            color: white;
+            padding: 10px 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            border-radius: 5px;
             cursor: pointer;
         }
 
+        .start-menu-items {
+            display: none;
+            position: absolute;
+            background-color: #f0f0f0;
+            border: 2px solid #0078d4;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            top: 35px;
+            left: 0;
+            width: 200px;
+        }
+
+        .start-menu-items a {
+            display: block;
+            padding: 5px;
+            color: #0078d4;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 3px;
+        }
+
+        .start-menu-items a:hover {
+            background-color: #0078d4;
+            color: white;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        /* Specific styles for the active tab */
         .nav-item.active {
             font-weight: bold;
-            text-decoration: underline;
+            color: #f1f1f1;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="nav-bar">
-        <div class="nav-item active" onclick="switchTab('tumblr')">Tumblr</div>
-        <div class="nav-item" onclick="switchTab('reddit')">Reddit</div>
+    <div class="container">
+        <div id="tumblr-posts" class="posts-container"></div>
+        <div id="reddit-posts" class="posts-container hidden"></div>
     </div>
 
-    <div id="tumblr-posts" class="posts-container"></div>
-    <div id="reddit-posts" class="posts-container hidden"></div>
+    <!-- Windows XP Style Start Menu -->
+    <div class="start-menu" onclick="toggleStartMenu()">Start</div>
+    <div class="start-menu-items">
+        <a href="javascript:void(0)" onclick="switchTab('tumblr')" class="nav-item active">Tumblr</a>
+        <a href="javascript:void(0)" onclick="switchTab('reddit')" class="nav-item">Reddit</a>
+    </div>
 
     <script>
+        // Toggle start menu visibility
+        function toggleStartMenu() {
+            const menu = document.querySelector('.start-menu-items');
+            menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+        }
+
         // Switch between Reddit and Tumblr content
         function switchTab(tab) {
             document.querySelectorAll('.posts-container').forEach(t => t.classList.add('hidden'));
             document.querySelectorAll('.nav-item').forEach(link => link.classList.remove('active'));
 
             document.getElementById(`${tab}-posts`).classList.remove('hidden');
-            document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
         }
 
         // Fetch Tumblr posts from multiple blogs
