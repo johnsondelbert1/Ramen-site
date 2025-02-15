@@ -103,9 +103,24 @@
 
         .card img {
             width: 100%;
-            border-radius: 8px;
+            max-height: 50vh; /* Default max height for small screens (50% of the viewport height) */
+            object-fit: contain; /* Ensures the aspect ratio is maintained */
             display: block;
-            cursor: pointer;
+            margin: 0 auto;
+        }
+
+        /* For larger screens, reduce the max height */
+        @media (min-width: 768px) {
+            .card img {
+                max-height: 40vh; /* 40% of the viewport height for larger screens */
+            }
+        }
+
+        /* For even larger screens (desktops), reduce the max height further */
+        @media (min-width: 1200px) {
+            .card img {
+                max-height: 30vh; /* 30% of the viewport height for very large screens */
+            }
         }
 
         .post-type {
@@ -236,7 +251,7 @@
                     card.className = 'card';
                     card.innerHTML = `
                         ${postContent}
-                        <div class="post-type">Type: ${postType}</div>
+                        <div class="post-type">Post Type: ${postType}</div>
                     `;
                     tumblrPosts.appendChild(card);
                 });
@@ -246,17 +261,15 @@
             }
         }
 
-        function toggleContent(event) {
-            const cardBody = event.target.nextElementSibling;
-            cardBody.classList.toggle('open');
-        }
-
         fetchRedditData();
         fetchTumblrData();
-    </script>
 
-    <!-- Add Material Design Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet">
+        // Toggle post content on header click
+        function toggleContent(event) {
+            const body = event.target.nextElementSibling;
+            body.classList.toggle('open');
+        }
+    </script>
 
 </body>
 
