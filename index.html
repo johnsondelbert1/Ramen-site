@@ -34,6 +34,11 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
+            display: none;
+        }
+
+        .posts-container.active {
+            display: grid;
         }
 
         .card {
@@ -95,7 +100,7 @@
 <body>
 
     <div class="container">
-        <div id="reddit-posts" class="posts-container active"></div>
+        <div id="reddit-posts" class="posts-container"></div>
         <div id="tumblr-posts" class="posts-container"></div>
         <div class="error" id="reddit-error"></div>
         <div class="error" id="tumblr-error"></div>
@@ -126,7 +131,7 @@
             document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
         }
 
-        // Set the default tab as active
+        // Set the default tab as active (Reddit)
         document.getElementById('reddit-posts').classList.add('active');
 
         // Fetch Reddit posts
